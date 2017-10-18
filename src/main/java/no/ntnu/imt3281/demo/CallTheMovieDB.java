@@ -20,7 +20,7 @@ public class CallTheMovieDB {
 		try {
 			req = Unirest.get("https://api.themoviedb.org/3/person/62?language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
 			System.out.println(req);		// Outputs JSON response from server.
-			Unirest.shutdown();
+			Unirest.shutdown();			// Must be called at the end of the application
 		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
