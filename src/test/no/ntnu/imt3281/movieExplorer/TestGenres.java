@@ -17,5 +17,4 @@ public class TestGenres {
 		assertEquals ("Action", genre);					// From movies list
 		assertEquals ("Soap", Genres.resolve(10766));	// From tv list
 	}
-
 }

@@ -105,6 +105,8 @@ public class TheMovieDBConfigurationTest {
 
 	@Test
 	public void test() {
+		// The json data that has been hard coded here would normally be found by requesting : https://api.themoviedb.org/3/configuration?api_key=
+		// More information here: https://developers.themoviedb.org/3/configuration  
 		TheMovieDBConfiguration configuration = new TheMovieDBConfiguration(json);
 		// Each of the getNNNNNURL functions should return the base url appended with the largest image size 
 		// and then the parameter sent to the function
