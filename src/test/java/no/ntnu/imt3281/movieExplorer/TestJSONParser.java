@@ -89,5 +89,8 @@ public class TestJSONParser {
 		assertEquals(126L, parsedJSON.getValue("runtime"));
 		assertEquals("Adventure", parsedJSON.get("genres").get(0).getValue("name"));			// the get method should return a new JSON object containing the branch for the given name or index
 		assertEquals("English", parsedJSON.get("spoken_languages").get(0).getValue("name"));	
+		assertEquals(3, parsedJSON.get("spoken_languages").size(), 0);						// The size of the array "spoken_languages"
+		assertEquals(2, parsedJSON.get("spoken_languages").get(0).size(), 0);					// The size of the first JSON object in "spoken_languages"
+
 	}
 }
