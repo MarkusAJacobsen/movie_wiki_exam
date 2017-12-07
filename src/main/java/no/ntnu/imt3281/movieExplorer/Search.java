@@ -8,6 +8,12 @@ import java.net.URLEncoder;
 
 public class Search {
 
+    /**
+     * Uses themoviedb's search API, encodes the query
+     *"Search multiple models in a single request. Multi search currently supports searching for movies, tv shows and people in a single request."
+     * @param query Wanted search query
+     * @return new JSON Object with the body of the call
+     */
     public static JSON multiSearch(String query) {
         String req;
         String searchString = null;
@@ -25,6 +31,11 @@ public class Search {
         return null;
     }
 
+    /**
+     * "Get a movie or TV credit by ID"
+     * @param i ID to search for
+     * @return new JSON object with the body of the call
+     */
     public static JSON actors(int i) {
         String req;
         try {
@@ -36,6 +47,12 @@ public class Search {
         return null;
     }
 
+    /**
+     * "Discover movies by different types of data like average rating, number of votes, genres and certifications. You can get a valid list of certifications from the method."
+     * Used in this context to find in which works a person takes part in
+     * @param i ID of person
+     * @return new JSON object with the body of the call
+     */
     public static JSON takesPartIn(int i) {
         String req;
         try {
