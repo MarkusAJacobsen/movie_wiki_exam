@@ -3,33 +3,52 @@ package no.ntnu.imt3281.movieExplorer;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 
 public class JSON {
-    public JSONObject obj;
+    public ArrayList<JSON> obj;
+    public String key;
+    public Object value;
 
     public JSON(String jsonInput) {
-        this.obj = new JSONObject();
+        this.obj = new ArrayList<>();
         JSONParser parser = new JSONParser();
         try {
-            this.obj = (JSONObject) parser.parse(jsonInput);
+            JSONObject objects = (JSONObject) parser.parse(jsonInput);
+            Object tmp;
+            Set<String> keys = objects.keySet();
+
+            for(String key : keys) {
+                tmp = objects.get(key);
+
+                if (tmp instanceof JSONArray) {
+                    JSON array = new JSON((JSONArray) tmp);
+                    array.key = key;
+                    obj.add(array);
+
+                } else if (tmp instanceof  JSONObject) {
+                    JSON singleObject = new JSON(((JSONObject) tmp).toJSONString());
+                    obj.add(singleObject);
+                } else
+                    obj.add(new JSON(key,tmp));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+
     }
 
-    public JSON(Object tmp) {
-        this.obj = new JSONObject();
-        try {
-            this.obj.put("tmp", tmp);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public JSON(String key, Object tmp) {
+        this.key = key; this.value = tmp;
+        obj = new ArrayList<>();
     }
 
-    public JSON (JSONObject tmp) {
-        this.obj = tmp;
+    public JSON(JSONArray tmp) {
+        
     }
 
     public <T> T getValue(String query) {
@@ -47,11 +66,9 @@ public class JSON {
     }
 
     public JSON get(String query) {
-        Object tmp =  obj.get(query);
-        if(tmp != null) {
-            if(obj.get(query) instanceof JSONArray) {
-                return new JSON(tmp);
-            }
+        for (JSON o : obj)  {
+            if (query.equals(o.key))
+                return o;
         }
         return null;
     }
