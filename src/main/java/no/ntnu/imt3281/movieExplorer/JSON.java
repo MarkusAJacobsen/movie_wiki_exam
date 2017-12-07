@@ -4,10 +4,14 @@ import org.json.simple.*;
 import org.json.simple.parser.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
-
+/**
+ * JSON object has a list capable of holding objects of type JSON
+ * the structure allows it to either hold a instance of JSONObject, in
+ * which the key and value field is used, or a JSONArray, in which the
+ * obj and key field is used.
+ */
 public class JSON {
     public ArrayList<JSON> obj;
     public String key;
@@ -18,53 +22,80 @@ public class JSON {
         JSONParser parser = new JSONParser();
         try {
             JSONObject objects = (JSONObject) parser.parse(jsonInput);
-            Object tmp;
             Set<String> keys = objects.keySet();
+            this.addInstance(keys, objects);
 
-            for(String key : keys) {
-                tmp = objects.get(key);
-
-                if (tmp instanceof JSONArray) {
-                    JSON array = new JSON((JSONArray) tmp);
-                    array.key = key;
-                    obj.add(array);
-
-                } else if (tmp instanceof  JSONObject) {
-                    JSON singleObject = new JSON(((JSONObject) tmp).toJSONString());
-                    obj.add(singleObject);
-                } else
-                    obj.add(new JSON(key,tmp));
-            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
     }
 
+    /**
+     * Constructor for a JSONObject
+     * @param key - Name or key value
+     * @param tmp - Object it self
+     */
     public JSON(String key, Object tmp) {
-        this.key = key; this.value = tmp;
         obj = new ArrayList<>();
+        this.key = key;
+        this.value = tmp;
     }
 
+    /**
+     * Constructor for a JSONArray
+     * @param tmp
+     */
     public JSON(JSONArray tmp) {
-        
-    }
+        this.obj = new ArrayList<>();
+        this.key = null;
+        this.value = null;
 
-    public <T> T getValue(String query) {
-        if(obj.get(query) != null) {
-            T value = (T) obj.get(query);
-            if(value instanceof String) {
-                return (T) value.toString();
-            } else if (value instanceof Long) {
-                return value;
-            } else
-                return value;
-
+        for (Object object : tmp) {
+            if (object instanceof JSONArray) {
+                obj.add((new JSON((JSONArray) object)));
+            } else if (object instanceof JSONObject) {
+                obj.add(new JSON(((JSONObject) object).toJSONString()));
+            }
         }
-        return (T) "";
     }
 
+    /**
+     * Ported main constructor for reduced cognitive complexity (SonarLint)
+     * @param keys - posts key values
+     * @param posts - All the JSONObjects created from a JSON input string
+     */
+    public void addInstance(Set<String> keys, JSONObject posts) {
+        Object tmp;
+        for(String query : keys) {
+            tmp = posts.get(query);
+
+            if (tmp instanceof JSONArray) {
+                JSON array = new JSON((JSONArray) tmp);
+                array.key = query;
+                obj.add(array);
+
+            } else if (tmp instanceof  JSONObject) {
+                JSON singleObject = new JSON(((JSONObject) tmp).toJSONString());
+                obj.add(singleObject);
+            } else
+                obj.add(new JSON(query,tmp));
+        }
+    }
+
+    /**
+     * Used to return a JSONObject
+     * @param query - Key value to find
+     * @return Found objective
+     */
+    public Object getValue(String query) {
+        return this.get(query).value;
+    }
+
+    /**
+     * Loops through this.obj, if found return corresponding JSON object
+     * @param query
+     * @return
+     */
     public JSON get(String query) {
         for (JSON o : obj)  {
             if (query.equals(o.key))
@@ -73,14 +104,20 @@ public class JSON {
         return null;
     }
 
+    /**
+     * Returns the size of a JSON object
+     * @return
+     */
     public int size() {
         return this.obj.size();
     }
 
-
+    /**
+     * Finds a JSON's wanted index and returns corresponding JSON object
+     * @param i Index to find
+     * @return Found JSON object
+     */
     public JSON get(int i) {
-        JSONArray tmp = (JSONArray) this.obj.get("tmp");
-        JSONObject tmp2 = (JSONObject) tmp.get(i);
-        return new JSON(tmp2);
+       return this.obj.get(i);
     }
 }
