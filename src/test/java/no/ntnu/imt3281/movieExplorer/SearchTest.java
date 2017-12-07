@@ -38,8 +38,7 @@ public class SearchTest {
 		// Use the with_people field to supply the id of the person of interest.
 		// Return the result as a JSON object.
 		JSON result = Search.takesPartIn(138);
-		assertEquals("Pulp Fiction", 
-				result.get("results").get(0).getValue("original_title"));					// Quentin Tarantino is director of this movie
+		assertEquals("Pulp Fiction", result.get("results").get(0).getValue("original_title"));					// Quentin Tarantino is director of this movie
 		assertEquals(68L, (Long)result.getValue("total_results"), 5L);					// Was 68 on Oct. 19th, should not be more than 5 more/less by time of the exam
 	}
 }

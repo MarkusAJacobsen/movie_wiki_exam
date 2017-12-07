@@ -56,7 +56,7 @@ public class Search {
     public static JSON takesPartIn(int i) {
         String req;
         try {
-            req = Unirest.get("https://api.themoviedb.org/3/discover/movie?with_people=138&page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+            req = Unirest.get("https://api.themoviedb.org/3/discover/movie?with_people="+i+"&page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
             return new JSON(req);
         } catch (UnirestException e) {
             e.printStackTrace();

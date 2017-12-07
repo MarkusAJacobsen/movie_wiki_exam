@@ -10,12 +10,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.text.Text;
-import no.ntnu.imt3281.movieExplorer.GUI.SearchResultItem;
 
-import javax.naming.directory.SearchResult;
-import java.awt.event.MouseEvent;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 
 public class GUI{
     @FXML private TextField searchField;
@@ -57,11 +52,15 @@ public class GUI{
 				}
             });
     }
-
+	
 	private void searchMovies(long id, TreeItem<SearchResultItem> parent) {
     	int intId = (int) id;
     	JSON result = Search.takesPartIn(intId);
-		for (int i = 0; i < result.size(); i++) {
+    	if(!parent.getChildren().isEmpty()) {
+			parent.getChildren().remove(0, parent.getChildren().size());
+		}
+
+		for (int i = 0; i < result.get("results").size(); i++) {
 			SearchResultItem item = new SearchResultItem(result.get("results").get(i).get(4).getValue("title").toString());
 			parent.getChildren().add(new TreeItem<>(item));
 		}
