@@ -63,4 +63,15 @@ public class Search {
         }
         return null;
     }
+
+    public static JSON movie(long i) {
+        String req;
+        try {
+            req = Unirest.get("https://api.themoviedb.org/3/movie/"+i+"?language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+            return new JSON(req);
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -5,16 +5,21 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 import javafx.event.ActionEvent;
 
+import java.io.IOException;
+
 
 public class GUI{
     @FXML private TextField searchField;
+    @FXML private Pane detailPane;
     @FXML private TreeView<SearchResultItem> searchResult;
     
     // Root node for search result tree view
@@ -26,10 +31,10 @@ public class GUI{
      * ready and available.
      */
     public void initialize() {
-    		searchResult.setRoot(searchResultRootNode);
-		    EventHandler<MouseEvent> mouseEventHandle = this::handleMouseClicked;
-		    searchResult.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventHandle);
-    }
+		searchResult.setRoot(searchResultRootNode);
+		EventHandler<MouseEvent> mouseEventHandle = this::handleMouseClicked;
+		searchResult.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventHandle);
+	}
 
 	private void handleMouseClicked(MouseEvent event) {
     	TreeItem<SearchResultItem> selectedNode = searchResult.getSelectionModel().getSelectedItem();
@@ -40,6 +45,7 @@ public class GUI{
 				searchMovies(selectedNode.getValue().id, selectedNode);
 				break;
 			case "movie":
+
 				searchActors(selectedNode.getValue().id, selectedNode);
 				break;
 			default: break;
@@ -95,6 +101,10 @@ public class GUI{
 		parent.setExpanded(true);
 	}
 
+	private void loadDetailedPane() throws IOException {
+		Pane newPane =  FXMLLoader.load(getClass().getResource("detailedView.fxml"));
+		detailPane.getChildren().add(newPane);
+	}
 
 	class SearchResultItem {
     		private String media_type = "";
@@ -143,7 +153,8 @@ public class GUI{
 			this.media_type = media_type;
 			this.id = id;
 		}
-    		
+
+
 		/**
 		 * Used by the tree view to get the value to display to the user. 
 		 */
