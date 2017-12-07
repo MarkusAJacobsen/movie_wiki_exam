@@ -34,8 +34,6 @@ public class GUI{
 	private void handleMouseClicked(MouseEvent event) {
     	TreeItem<SearchResultItem> selectedNode = searchResult.getSelectionModel().getSelectedItem();
 		String mediaType = selectedNode.getValue().media_type;
-		System.out.print(mediaType);
-		System.out.print(selectedNode);
 
 		switch (mediaType) {
 			case "person":
@@ -44,6 +42,7 @@ public class GUI{
 			case "movie":
 				searchActors(selectedNode.getValue().id, selectedNode);
 				break;
+			default: break;
 		}
 	}
 
@@ -64,13 +63,6 @@ public class GUI{
     		}
     		searchResultRootNode.setExpanded(true);
     		searchResults.setExpanded(true);
-
-    		//Following lambda https://stackoverflow.com/a/31897702/7036624
-            /*searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
-            	if(newValue.getValue().media_type.equals("person")) {
-            		searchMovies(newValue.getValue().id, newValue);
-				}
-            });*/
     }
 
 	private void searchMovies(long id, TreeItem<SearchResultItem> parent) {
@@ -81,38 +73,26 @@ public class GUI{
 		}
 
 		for (int i = 0; i < result.get("results").size(); i++) {
-			SearchResultItem item = new SearchResultItem(result.get("results").get(i).get(4).getValue("title").toString(), "movie", (long) result.get("results").get(i).get(11).getValue("id"));
-			System.out.print(item);
+			SearchResultItem item = new SearchResultItem(result.get("results").get(i).get(4).getValue("title").toString(),
+					"movie", (long) result.get("results").get(i).get(11).getValue("id"));
 			parent.getChildren().add(new TreeItem<>(item));
 		}
 		parent.setExpanded(true);
-
-
-
-    	/*searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
-			if(newValue.getValue().media_type.equals("movie")){
-				searchActors(newValue.getValue().id, newValue);
-			}
-		});*/
 	}
 
 	private void searchActors(long id, TreeItem<SearchResultItem> parent) {
 		int intId = (int) id;
 		JSON result = Search.actors(intId);
-		if(!parent.getChildren().isEmpty()) {
+		if (!parent.getChildren().isEmpty()) {
 			parent.getChildren().remove(0, parent.getChildren().size());
 		}
 
 		for (int i = 0; i < result.get("cast").size(); i++) {
-			SearchResultItem item = new SearchResultItem(result.get("cast").get(i).get(4).getValue("name").toString());
+			SearchResultItem item = new SearchResultItem(result.get("cast").get(i).get(4).getValue("name").toString(),
+					"person", (long) result.get("cast").get(i).get(6).getValue("id"));
 			parent.getChildren().add(new TreeItem<>(item));
 		}
 		parent.setExpanded(true);
-		/*searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
-			if(newValue.getValue().media_type.equals("person")){
-				searchMovies(newValue.getValue().id, newValue);
-			}
-		});*/
 	}
 
 
@@ -151,6 +131,12 @@ public class GUI{
 			id = (Long)json.getValue("id");
 		}
 
+		/**
+		 * Constructor for children of children with missing media type out of the box
+		 * @param title title
+		 * @param media_type hardcoded media type
+		 * @param id id
+		 */
 		public SearchResultItem(String title, String media_type, long id) {
 			this.title = title;
 			this.name = title;
