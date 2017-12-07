@@ -55,6 +55,8 @@ public class JSON {
                 obj.add((new JSON((JSONArray) object)));
             } else if (object instanceof JSONObject) {
                 obj.add(new JSON(((JSONObject) object).toJSONString()));
+            } else {
+                obj.add(new JSON(null, object));
             }
         }
     }
@@ -75,8 +77,8 @@ public class JSON {
                 obj.add(array);
 
             } else if (tmp instanceof  JSONObject) {
-                JSON singleObject = new JSON(((JSONObject) tmp).toJSONString());
-                obj.add(singleObject);
+                JSON single = new JSON(((JSONObject) tmp).toJSONString());
+                obj.add(single);
             } else
                 obj.add(new JSON(query,tmp));
         }
@@ -88,7 +90,10 @@ public class JSON {
      * @return Found objective
      */
     public Object getValue(String query) {
-        return this.get(query).value;
+        if(this.value == null) {
+            return this.get(query).value;
+        }
+        return this.value;
     }
 
     /**
