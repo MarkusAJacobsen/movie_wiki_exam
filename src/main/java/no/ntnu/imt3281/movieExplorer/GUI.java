@@ -1,4 +1,4 @@
-package no.ntnu.imt3281.movieExplorer;
+/*package no.ntnu.imt3281.movieExplorer;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,7 +19,7 @@ public class GUI {
      * Called when the object has been created and connected to the fxml file. All components defined in the fxml file is 
      * ready and available.
      */
-    public void initialize() {
+    /*public void initialize() {
     		searchResult.setRoot(searchResultRootNode);
     }
 
@@ -30,7 +30,7 @@ public class GUI {
      * 
      * @param event ignored
      */
-    void search(ActionEvent event) {
+   /* void search(ActionEvent event) {
     		JSON result = Search.multiSearch(searchField.getText()).get("results");
     		TreeItem<SearchResultItem> searchResults = new TreeItem<> (new SearchResultItem("Searching for : "+searchField.getText()));
     		searchResultRootNode.getChildren().add(searchResults);
@@ -54,7 +54,7 @@ public class GUI {
     		 * 
     		 * @param name the value that will be displayed in the tree view
     		 */
-    		public SearchResultItem(String name) {
+    	/*	public SearchResultItem(String name) {
     			this.name = name;
     		}
     		
@@ -63,7 +63,7 @@ public class GUI {
     		 * 
     		 * @param json contains the data that will be used to initialize this object.
     		 */
-		public SearchResultItem(JSON json) {
+		/*public SearchResultItem(JSON json) {
 			media_type = (String) json.getValue("media_type");
 			if (media_type.equals("person")) {
 				name = (String)json.getValue("name");	
@@ -77,7 +77,7 @@ public class GUI {
 		/**
 		 * Used by the tree view to get the value to display to the user. 
 		 */
-		@Override
+	/*	@Override
 		public String toString() {
 			if (media_type.equals("person")) {
 				return name;
@@ -88,4 +88,4 @@ public class GUI {
 			}
 		}
     }
-}
+}*/
