@@ -1,13 +1,21 @@
 package no.ntnu.imt3281.movieExplorer;
 
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.text.Text;
 import no.ntnu.imt3281.movieExplorer.GUI.SearchResultItem;
 
-public class GUI {
+import javax.naming.directory.SearchResult;
+import java.awt.event.MouseEvent;
+
+public class GUI{
     @FXML private TextField searchField;
     @FXML private TreeView<SearchResultItem> searchResult;
     
@@ -31,17 +39,26 @@ public class GUI {
      * @param event ignored
      */
     void search(ActionEvent event) {
+
+
     		JSON result = Search.multiSearch(searchField.getText()).get("results");
     		TreeItem<SearchResultItem> searchResults = new TreeItem<> (new SearchResultItem("Searching for : "+searchField.getText()));
     		searchResultRootNode.getChildren().add(searchResults);
     		for (int i=0; i<result.size(); i++) {
     			SearchResultItem item = new SearchResultItem(result.get(i));
-    			searchResults.getChildren().add(new TreeItem<SearchResultItem>(item));
+    			searchResults.getChildren().add(new TreeItem<>(item));
     		}
     		searchResultRootNode.setExpanded(true);
     		searchResults.setExpanded(true);
+            searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
+                System.out.print(newValue.getValue().media_type + "\n");
+            });
     }
-    
+
+
+
+
+
     class SearchResultItem {
     		private String media_type = "";
     		private String name = "";
