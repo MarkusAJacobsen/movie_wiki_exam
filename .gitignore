@@ -15,3 +15,5 @@ buildNumber.properties
 
 .idea/
 Eksamen2017.iml
+derby.log
+genres.db/
