@@ -1,4 +1,4 @@
-/*package no.ntnu.imt3281.movieExplorer;
+package no.ntnu.imt3281.movieExplorer;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,7 +19,7 @@ public class GUI {
      * Called when the object has been created and connected to the fxml file. All components defined in the fxml file is 
      * ready and available.
      */
-    /*public void initialize() {
+    public void initialize() {
     		searchResult.setRoot(searchResultRootNode);
     }
 
@@ -30,7 +30,7 @@ public class GUI {
      * 
      * @param event ignored
      */
-   /* void search(ActionEvent event) {
+    void search(ActionEvent event) {
     		JSON result = Search.multiSearch(searchField.getText()).get("results");
     		TreeItem<SearchResultItem> searchResults = new TreeItem<> (new SearchResultItem("Searching for : "+searchField.getText()));
     		searchResultRootNode.getChildren().add(searchResults);
@@ -47,14 +47,15 @@ public class GUI {
     		private String name = "";
     		private long id;
     		private String profile_path = "";
-    		private String title = ""; 
+    		private String title = "";
+    		private String title_tv = "";
     		
     		/**
     		 * Create new SearchResultItem with the given name as what will be displayed in the tree view.
     		 * 
     		 * @param name the value that will be displayed in the tree view
     		 */
-    	/*	public SearchResultItem(String name) {
+    		public SearchResultItem(String name) {
     			this.name = name;
     		}
     		
@@ -63,29 +64,33 @@ public class GUI {
     		 * 
     		 * @param json contains the data that will be used to initialize this object.
     		 */
-		/*public SearchResultItem(JSON json) {
+		public SearchResultItem(JSON json) {
 			media_type = (String) json.getValue("media_type");
 			if (media_type.equals("person")) {
 				name = (String)json.getValue("name");	
 				profile_path = (String)json.getValue("profile_path");
 			} else if (media_type.equals("movie")) {
 				title = (String)json.getValue("title");
-			}
+			} else if (media_type.equals("tv")){
+                title_tv = (String)json.getValue("original_name");
+            }
 			id = (Long)json.getValue("id");
 		}
     		
 		/**
 		 * Used by the tree view to get the value to display to the user. 
 		 */
-	/*	@Override
+		@Override
 		public String toString() {
 			if (media_type.equals("person")) {
 				return name;
 			} else if (media_type.equals("movie")) {
 				return title;
-			} else {
+			} else if(media_type.equals("tv")) {
+			    return title_tv;
+            } else {
 				return name;
 			}
 		}
     }
-}*/
+}
