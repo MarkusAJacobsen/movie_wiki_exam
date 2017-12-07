@@ -85,12 +85,11 @@ public class TestJSONParser {
 	public void test() {
 		JSON parsedJSON = new JSON(jsonInput);												// Should parse the provided json string
 		assertEquals("The Fifth Element", parsedJSON.getValue("original_title"));				// getValue returns an Object holding the value for the requested key
-		assertEquals(90000000L, parsedJSON.getValue("budget"));								// All non floating point numbers are returned as Long
-		assertEquals(126L, parsedJSON.getValue("runtime"));
+		assertEquals((Long) 90000000L, parsedJSON.getValue("budget"));								// All non floating point numbers are returned as Long
+		assertEquals((Long) 126L, parsedJSON.getValue("runtime"));
 		assertEquals("Adventure", parsedJSON.get("genres").get(0).getValue("name"));			// the get method should return a new JSON object containing the branch for the given name or index
-		assertEquals("English", parsedJSON.get("spoken_languages").get(0).getValue("name"));	
+		assertEquals("English", parsedJSON.get("spoken_languages").get(0).getValue("name"));
 		assertEquals(3, parsedJSON.get("spoken_languages").size(), 0);						// The size of the array "spoken_languages"
-		assertEquals(2, parsedJSON.get("spoken_languages").get(0).size(), 0);					// The size of the first JSON object in "spoken_languages"
-
+		assertEquals(2, parsedJSON.get("spoken_languages").get(0).size(), 0);				// The size of the first JSON object in "spoken_languages"
 	}
 }

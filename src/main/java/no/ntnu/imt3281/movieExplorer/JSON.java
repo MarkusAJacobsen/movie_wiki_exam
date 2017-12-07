@@ -3,6 +3,8 @@ package no.ntnu.imt3281.movieExplorer;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
+import java.util.Arrays;
+import java.util.Map;
 
 
 public class JSON {
@@ -30,15 +32,23 @@ public class JSON {
         return (T) "";
     }
 
-    public JSON get(String genres) {
+    public JSON get(String query) {
+        Object tmp = obj.get(query);
+
+        if(tmp != null) {
+            if(obj.get(query) instanceof JSONArray) {
+                return new JSON(tmp.toString());
+            }
+        }
         return null;
     }
 
-    public double size() {
-        return 0.0;
+    public int size() {
+        return 0;
     }
+
 
     public JSON get(int i) {
-        return null;
+        return new JSON("he");
     }
 }
