@@ -78,6 +78,7 @@ public class JSON {
 
             } else if (tmp instanceof  JSONObject) {
                 JSON single = new JSON(((JSONObject) tmp).toJSONString());
+                single.key = key;
                 obj.add(single);
             } else
                 obj.add(new JSON(query,tmp));
@@ -122,7 +123,13 @@ public class JSON {
      * @param i Index to find
      * @return Found JSON object
      */
-    public JSON get(int i) {
+    public JSON get(int i)
+    {
        return this.obj.get(i);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

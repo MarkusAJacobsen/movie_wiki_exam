@@ -14,6 +14,8 @@ import no.ntnu.imt3281.movieExplorer.GUI.SearchResultItem;
 
 import javax.naming.directory.SearchResult;
 import java.awt.event.MouseEvent;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 public class GUI{
     @FXML private TextField searchField;
@@ -39,8 +41,6 @@ public class GUI{
      * @param event ignored
      */
     void search(ActionEvent event) {
-
-
     		JSON result = Search.multiSearch(searchField.getText()).get("results");
     		TreeItem<SearchResultItem> searchResults = new TreeItem<> (new SearchResultItem("Searching for : "+searchField.getText()));
     		searchResultRootNode.getChildren().add(searchResults);
@@ -50,16 +50,26 @@ public class GUI{
     		}
     		searchResultRootNode.setExpanded(true);
     		searchResults.setExpanded(true);
+    		//Following lambda https://stackoverflow.com/a/31897702/7036624
             searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
-                System.out.print(newValue.getValue().media_type + "\n");
+            	if(newValue.getValue().media_type.equals("person")) {
+            		searchMovies(newValue.getValue().id, newValue);
+				}
             });
     }
 
+	private void searchMovies(long id, TreeItem<SearchResultItem> parent) {
+    	int intId = (int) id;
+    	JSON result = Search.takesPartIn(intId);
+		for (int i = 0; i < result.size(); i++) {
+			SearchResultItem item = new SearchResultItem(result.get("results").get(i).get(4).getValue("title").toString());
+			parent.getChildren().add(new TreeItem<>(item));
+		}
+		parent.setExpanded(true);
+	}
 
 
-
-
-    class SearchResultItem {
+	class SearchResultItem {
     		private String media_type = "";
     		private String name = "";
     		private long id;
