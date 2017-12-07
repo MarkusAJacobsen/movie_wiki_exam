@@ -1,15 +1,16 @@
 package no.ntnu.imt3281.movieExplorer;
 
+import com.sun.javafx.scene.control.SelectedCellsMap;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+
+import javafx.event.ActionEvent;
 
 
 public class GUI{
@@ -26,9 +27,27 @@ public class GUI{
      */
     public void initialize() {
     		searchResult.setRoot(searchResultRootNode);
+		    EventHandler<MouseEvent> mouseEventHandle = this::handleMouseClicked;
+		    searchResult.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventHandle);
     }
 
-    @FXML
+	private void handleMouseClicked(MouseEvent event) {
+    	TreeItem<SearchResultItem> selectedNode = searchResult.getSelectionModel().getSelectedItem();
+		String mediaType = selectedNode.getValue().media_type;
+		System.out.print(mediaType);
+		System.out.print(selectedNode);
+
+		switch (mediaType) {
+			case "person":
+				searchMovies(selectedNode.getValue().id, selectedNode);
+				break;
+			case "movie":
+				searchActors(selectedNode.getValue().id, selectedNode);
+				break;
+		}
+	}
+
+	@FXML
     /**
      * Called when the seqrch button is pressed or enter is pressed in the searchField.
      * Perform a multiSearch using theMovieDB and add the results to the searchResult tree view.
@@ -45,14 +64,15 @@ public class GUI{
     		}
     		searchResultRootNode.setExpanded(true);
     		searchResults.setExpanded(true);
+
     		//Following lambda https://stackoverflow.com/a/31897702/7036624
-            searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
+            /*searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
             	if(newValue.getValue().media_type.equals("person")) {
             		searchMovies(newValue.getValue().id, newValue);
 				}
-            });
+            });*/
     }
-	
+
 	private void searchMovies(long id, TreeItem<SearchResultItem> parent) {
     	int intId = (int) id;
     	JSON result = Search.takesPartIn(intId);
@@ -61,10 +81,38 @@ public class GUI{
 		}
 
 		for (int i = 0; i < result.get("results").size(); i++) {
-			SearchResultItem item = new SearchResultItem(result.get("results").get(i).get(4).getValue("title").toString());
+			SearchResultItem item = new SearchResultItem(result.get("results").get(i).get(4).getValue("title").toString(), "movie", (long) result.get("results").get(i).get(11).getValue("id"));
+			System.out.print(item);
 			parent.getChildren().add(new TreeItem<>(item));
 		}
 		parent.setExpanded(true);
+
+
+
+    	/*searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
+			if(newValue.getValue().media_type.equals("movie")){
+				searchActors(newValue.getValue().id, newValue);
+			}
+		});*/
+	}
+
+	private void searchActors(long id, TreeItem<SearchResultItem> parent) {
+		int intId = (int) id;
+		JSON result = Search.actors(intId);
+		if(!parent.getChildren().isEmpty()) {
+			parent.getChildren().remove(0, parent.getChildren().size());
+		}
+
+		for (int i = 0; i < result.get("cast").size(); i++) {
+			SearchResultItem item = new SearchResultItem(result.get("cast").get(i).get(4).getValue("name").toString());
+			parent.getChildren().add(new TreeItem<>(item));
+		}
+		parent.setExpanded(true);
+		/*searchResult.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
+			if(newValue.getValue().media_type.equals("person")){
+				searchMovies(newValue.getValue().id, newValue);
+			}
+		});*/
 	}
 
 
@@ -101,6 +149,13 @@ public class GUI{
                 title_tv = (String)json.getValue("original_name");
             }
 			id = (Long)json.getValue("id");
+		}
+
+		public SearchResultItem(String title, String media_type, long id) {
+			this.title = title;
+			this.name = title;
+			this.media_type = media_type;
+			this.id = id;
 		}
     		
 		/**
