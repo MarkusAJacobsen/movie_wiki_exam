@@ -15,6 +15,11 @@ public class MovieExplorer extends Application {
 	       Scene myScene = new Scene(gui);
 	       primaryStage.setScene(myScene);
 	       primaryStage.show();
+
+	       PreferencesHandler preferences = PreferencesHandler.getPreferenceInstance();
+	       if(preferences.getBasedirectory() == "BASE_DIR") {
+	       		preferences.setBasedirectory(System.getProperty("user.dir"));
+		   }
 	}
 	
 	public static void main(String[] args) {
