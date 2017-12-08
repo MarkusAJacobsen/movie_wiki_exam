@@ -1,8 +1,5 @@
 package no.ntnu.imt3281.movieExplorer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.sql.*;
 
 /**

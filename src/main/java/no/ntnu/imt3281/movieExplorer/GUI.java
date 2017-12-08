@@ -1,29 +1,37 @@
 package no.ntnu.imt3281.movieExplorer;
 
-import com.sun.javafx.scene.control.SelectedCellsMap;
+
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
-import javafx.event.ActionEvent;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.exists;
 
 
 public class GUI{
     @FXML private TextField searchField;
     @FXML private Pane detailPane;
     @FXML private TreeView<SearchResultItem> searchResult;
+    @FXML private MenuBar menuBar;
     
     // Root node for search result tree view
     private TreeItem<SearchResultItem> searchResultRootNode = new TreeItem<SearchResultItem> (new SearchResultItem(""));
+    private PreferencesHandler preferences = PreferencesHandler.getPreferenceInstance();
     
     @FXML
     /**
@@ -71,6 +79,34 @@ public class GUI{
     	Pane pane = newPane.load();
     	detailPane.getChildren().add(pane);
 
+	}
+
+	@FXML
+	void openBaseDirectoryChooser(ActionEvent event) throws IOException {
+    	System.out.print("Hey");
+
+		final DirectoryChooser directoryChooser =
+				new DirectoryChooser();
+		final File selectedDirectory =
+				directoryChooser.showDialog(null);
+		if (selectedDirectory != null) {
+			selectedDirectory.getAbsolutePath();
+		}
+		preferences.setBasedirectory(String.valueOf(selectedDirectory));
+		createDirectories();
+	}
+
+	private void createDirectories() {
+    	String baseURL = preferences.getBasedirectory();
+    	String [] folders = {"w1280", "w500", "w780", "h623", "w300"};
+
+    	for (String folder : folders){
+    		//https://stackoverflow.com/a/15571626/7036624
+    		Path path = Paths.get(baseURL+"/"+folder);
+			if(!path.toFile().exists()) {
+				path.toFile().mkdir();
+			}
+		}
 	}
 
 	@FXML
