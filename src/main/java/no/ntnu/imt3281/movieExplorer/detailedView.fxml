@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -19,12 +23,29 @@
                   <Font size="24.0" />
                </font></Text>
          </top>
-         <center>
-            <TextArea fx:id="description" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" wrapText="true" BorderPane.alignment="CENTER_RIGHT">
+         <left>
+            <ImageView fx:id="image" fitHeight="300.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                <BorderPane.margin>
-                  <Insets right="50.0" top="-50.0" />
+                  <Insets left="30.0" />
                </BorderPane.margin>
-            </TextArea>
+            </ImageView>
+         </left>
+         <center>
+            <SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" orientation="VERTICAL" prefHeight="300.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+              <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="300.0">
+                     <children>
+                        <TextArea fx:id="description" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" wrapText="true" />
+                     </children>
+                  </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                     <children>
+                        <Text boundsType="VISUAL" strokeType="OUTSIDE" strokeWidth="0.0" text="Sjangere" AnchorPane.topAnchor="10.0" />
+                        <FlowPane fx:id="genresBox" orientation="VERTICAL" prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="65.0" AnchorPane.topAnchor="8.0" />
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
          </center>
       </BorderPane>
    </children>
