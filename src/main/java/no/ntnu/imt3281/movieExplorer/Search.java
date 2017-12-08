@@ -6,7 +6,12 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class Search {
+class Search {
+    private static final String apiKey = "a47f70eb03a70790f5dd711f4caea42d";
+
+    private Search() {
+        //NO-OP
+    }
 
     /**
      * Uses themoviedb's search API, encodes the query
@@ -14,7 +19,7 @@ public class Search {
      * @param query Wanted search query
      * @return new JSON Object with the body of the call
      */
-    public static JSON multiSearch(String query) {
+    static JSON multiSearch(String query) {
         String req;
         String searchString = null;
         try {
@@ -23,7 +28,7 @@ public class Search {
             e.printStackTrace();
         }
         try {
-            req = Unirest.get("https://api.themoviedb.org/3/search/multi?include_adult=false&page=1&query="+searchString+"&language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+            req = Unirest.get("https://api.themoviedb.org/3/search/multi?include_adult=false&page=1&query="+searchString+"&language=en-US&api_key="+apiKey).asString().getBody();
             return new JSON(req);
         } catch (UnirestException e) {
             e.printStackTrace();
@@ -36,13 +41,13 @@ public class Search {
      * @param i ID to search for
      * @return new JSON object with the body of the call
      */
-    public static JSON actors(int i) {
+    static JSON actors(int i) {
         InformationDB db = InformationDB.getInstance();
         String req;
         String id;
         if(!db.inDb(Integer.toString(i), "ActorsInMovie")) {
             try {
-                req = Unirest.get("https://api.themoviedb.org/3/movie/" + i + "/credits?api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+                req = Unirest.get("https://api.themoviedb.org/3/movie/" + i + "/credits?api_key="+apiKey).asString().getBody();
                 JSON o = new JSON(req);
                 id = o.get(1).getValue("id").toString();
                 db.saveMovieCreditInDB(id, req);
@@ -64,12 +69,12 @@ public class Search {
      * @param i ID of person
      * @return new JSON object with the body of the call
      */
-    public static JSON takesPartIn(int i) {
+    static JSON takesPartIn(int i) {
         InformationDB db = InformationDB.getInstance();
         String req;
         if(!db.inDb(Integer.toString(i), "TakesPartIn")) {
             try {
-                req = Unirest.get("https://api.themoviedb.org/3/discover/movie?with_people=" + i + "&page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+                req = Unirest.get("https://api.themoviedb.org/3/discover/movie?with_people=" + i + "&page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key="+apiKey).asString().getBody();
                 JSON o = new JSON(req);
                 db.saveTakesPartInInDB(Integer.toString(i), req);
                 return o;
@@ -83,13 +88,18 @@ public class Search {
         return null;
     }
 
-    public static JSON movie(long i) {
+    /**
+     * Fetch information about a movie
+     * @param i Movie ID
+     * @return JSON of a movie
+     */
+    static JSON movie(long i) {
         InformationDB db = InformationDB.getInstance();
         String req;
         String id;
         if(!db.inDb(Long.toString(i), "Movies")) {
             try {
-                req = Unirest.get("https://api.themoviedb.org/3/movie/" + i + "?language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+                req = Unirest.get("https://api.themoviedb.org/3/movie/" + i + "?language=en-US&api_key="+apiKey).asString().getBody();
                 JSON o = new JSON(req);
                 id = o.get(9).getValue("id").toString();
                 db.saveMovieInDB(id, req);

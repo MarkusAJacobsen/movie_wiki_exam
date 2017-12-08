@@ -8,17 +8,17 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
+/**
+ * The detailedPaneController will keep all variables related
+ * to the detailedPane correct
+ */
 public class DetailedPaneController {
     @FXML
     private Text title;
@@ -48,11 +48,12 @@ public class DetailedPaneController {
         }
     }
 
-    @FXML
+
     /**
      * Called when the object has been created and connected to the fxml file. All components defined in the fxml file is
      * ready and available. Set all fields related to the detailedPane from movieDetails
      */
+    @FXML
    public void initialize() {
        title.setText(movieDetails.get(3).getValue("title").toString());
        description.setText(movieDetails.get(12).getValue("overview").toString());

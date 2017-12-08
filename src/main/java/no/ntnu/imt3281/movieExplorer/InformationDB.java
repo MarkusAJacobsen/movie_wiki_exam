@@ -10,7 +10,7 @@ import java.sql.*;
  */
 public class InformationDB {
     private Connection con;
-    private final String url = "jdbc:derby:genres.db";
+    private static final String url = "jdbc:derby:genres.db";
     private boolean connectedToDB = false;
     private static InformationDB instance = null;
     private static final String TABLENAME = "Genres";
@@ -33,14 +33,12 @@ public class InformationDB {
         {
             con = DriverManager.getConnection(url + ";create=true");
         }
-        createTableGenres();                              // Create new Table
+        createTableGenres();
         createTableActorsCreditInMovie();
         createTableTakesPartIn();
         createTableMovies();
-        connectedToDB = true;                       // Set connection to true
-
+        connectedToDB = true;
     }
-
 
 
     /**
@@ -48,7 +46,7 @@ public class InformationDB {
      * before, only return the "living" instance
      * @return Instance of this DB
      */
-    public static InformationDB getInstance() {
+    static InformationDB getInstance() {
         if(instance == null) {
             try {
                 instance = new InformationDB();
@@ -59,22 +57,20 @@ public class InformationDB {
         return instance;
     }
 
+
     /**
      * Creates a table with to fields, number and name representing the field from
      * themoviedb. Also has an internal incrementor
      */
     private void createTableGenres() {
         Statement stm = null;
-
         try                                         // Check if table exist already
         {
             stm = con.createStatement();
-            ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME);
-            tableExists.close();
+            ResultSet rs = stm.executeQuery("SELECT * FROM "+ TABLENAME);
+            rs.close();
             stm.close();
-        }
-        catch(SQLException e1)
-        {
+        } catch(SQLException e1) {
             try                                     // Create the table
             {
                 stm = con.createStatement();
@@ -84,26 +80,25 @@ public class InformationDB {
                        + " PRIMARY KEY ( id ))");
 
                 stm.close();
-            }
-            catch (SQLException e2)
-            {
+            } catch (SQLException e2) {
                e2.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
+        } finally {
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
     }
 
     private void createTableActorsCreditInMovie() {
         Statement stm = null;
-
         try                                         // Check if table exist already
         {
             stm = con.createStatement();
             ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME2);
             tableExists.close();
             stm.close();
-        }
-        catch(SQLException e1)
-        {
+        } catch(SQLException e1) {
             try                                     // Create the table
             {
                 stm = con.createStatement();
@@ -113,26 +108,25 @@ public class InformationDB {
                         + "actorString CLOB, "
                         + "PRIMARY KEY (id))");
                 stm.close();
-            }
-            catch (SQLException e2)
-            {
+            } catch (SQLException e2) {
                 e2.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
+        } finally {
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
     }
 
     private void createTableTakesPartIn() {
         Statement stm = null;
-
         try                                         // Check if table exist already
         {
             stm = con.createStatement();
             ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME3);
             tableExists.close();
             stm.close();
-        }
-        catch(SQLException e1)
-        {
+        } catch(SQLException e1) {
             try                                     // Create the table
             {
                 stm = con.createStatement();
@@ -142,26 +136,25 @@ public class InformationDB {
                         + "takesPartInString CLOB, "
                         + "PRIMARY KEY (id))");
                 stm.close();
-            }
-            catch (SQLException e2)
-            {
+            } catch (SQLException e2) {
                 e2.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
+        } finally {
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
     }
 
     private void createTableMovies() {
         Statement stm = null;
-
         try                                         // Check if table exist already
         {
             stm = con.createStatement();
             ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME4);
             tableExists.close();
             stm.close();
-        }
-        catch(SQLException e1)
-        {
+        } catch(SQLException e1) {
             try                                     // Create the table
             {
                 stm = con.createStatement();
@@ -171,11 +164,13 @@ public class InformationDB {
                         + "movieString CLOB, "
                         + "PRIMARY KEY (id))");
                 stm.close();
-            }
-            catch (SQLException e2)
-            {
+            } catch (SQLException e2) {
                 e2.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
+        } finally {
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
     }
 
@@ -185,7 +180,7 @@ public class InformationDB {
      * @param name External genre name
      * @return return code
      */
-    public int addGenres(String id, String name) {
+    int addGenres(String id, String name) {
         if (!connectedToDB)                          // Is there connection with DB?
             throw new IllegalStateException("Not contact with DB");
         // check if username is used
@@ -210,6 +205,8 @@ public class InformationDB {
                     return 1;
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
         }
         return 0;
@@ -220,8 +217,8 @@ public class InformationDB {
      * @param id External ID to check if exist
      * @return true/false found/not Found
      */
-    public boolean inDb(String id, String tableName) {
-        ResultSet res;                              // Variable to store the result
+    boolean inDb(String id, String tableName) {
+        ResultSet res = null;                              // Variable to store the result
         String statement = "SELECT Number FROM " +tableName
                 + "\n WHERE Number=?";
 
@@ -245,18 +242,116 @@ public class InformationDB {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try { res.close(); } catch (Exception e) { /* ignored */ }
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
         return false;
     }
 
+
+
+
+    int saveMovieCreditInDB(String number, String jsonString) {
+        if (!connectedToDB)                          // Is there connection with DB?
+            throw new IllegalStateException("Not contact with DB");
+        // check if username is used
+        if (inDb(number, TABLENAME2))                      // If exist !!
+            return -1;
+        else                                         // Not exist, add new !!
+        {
+            PreparedStatement stm = null;
+            try {
+                stm = con.prepareStatement("INSERT INTO " + TABLENAME2 + " (Number, ActorString) VALUES (?, ?)");
+
+                stm.setString(1, number);
+                stm.setString(2, jsonString); // Make the statement ready
+
+
+                // Execute to update
+                int insertedLines = stm.executeUpdate();
+                stm.close();
+
+                if (insertedLines > 0)
+                    return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
+            }
+            return 0;
+        }
+    }
+
+    int saveTakesPartInInDB(String number, String jsonString) {
+        if (!connectedToDB)                          // Is there connection with DB?
+            throw new IllegalStateException("Not contact with DB");
+        // check if username is used
+        if (inDb(number, TABLENAME3))                      // If exist !!
+            return -1;
+        else                                         // Not exist, add new !!
+        {
+            PreparedStatement stm = null;
+            try {
+                stm = con.prepareStatement("INSERT INTO " + TABLENAME3 + " (Number, TakesPartInString) VALUES (?, ?)");
+
+                stm.setString(1, number);
+                stm.setString(2, jsonString); // Make the statement ready
+
+
+                // Execute to update
+                int insertedLines = stm.executeUpdate();
+                stm.close();
+
+                if (insertedLines > 0)
+                    return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
+            }
+            return 0;
+        }
+    }
+
+    public int saveMovieInDB(String number, String jsonString) {
+        if (!connectedToDB)                     // Is there connection with DB?
+            throw new IllegalStateException("Not contact with DB");
+        // check if username is used
+        if (inDb(number, TABLENAME4))                      // If exist !!
+            return -1;
+        else                                         // Not exist, add new !!
+        {
+            PreparedStatement stm = null;
+            try {
+                stm = con.prepareStatement("INSERT INTO " + TABLENAME4 + " (Number, MovieString) VALUES (?, ?)");
+
+                stm.setString(1, number);
+                stm.setString(2, jsonString); // Make the statement ready
+
+
+                // Execute to update
+                int insertedLines = stm.executeUpdate();
+                stm.close();
+
+                if (insertedLines > 0)
+                    return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try { stm.close(); } catch (Exception e) { /* ignored */ }
+            }
+            return 0;
+        }
+    }
 
     /**
      * Fetch the "name" field of a DB post
      * @param i External ID to fetch
      * @return corresponding name for supplied i
      */
-    public String fetchField(int i) {
-        ResultSet res;
+    String fetchField(int i) {
+        ResultSet res = null;
         String statement = "SELECT Number, Name FROM " +TABLENAME
                 + "\n WHERE Number=?";
 
@@ -281,126 +376,20 @@ public class InformationDB {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try { res.close(); } catch (Exception e) { /* ignored */ }
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
 
-    public int saveMovieCreditInDB(String number, String jsonString) {
-        if (!connectedToDB)                          // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
-        // check if username is used
-        if (inDb(number, TABLENAME2))                      // If exist !!
-            return -1;
-        else                                         // Not exist, add new !!
-        {
-            PreparedStatement stm = null;
-            try {
-                stm = con.prepareStatement("INSERT INTO " + TABLENAME2 + " (Number, ActorString) VALUES (?, ?)");
-
-                stm.setString(1, number);
-                stm.setString(2, jsonString); // Make the statement ready
-
-
-                // Execute to update
-                int insertedLines = stm.executeUpdate();
-                stm.close();
-
-                if (insertedLines > 0)
-                    return 1;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }
-    }
-
-    public int saveTakesPartInInDB(String number, String jsonString) {
-        if (!connectedToDB)                          // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
-        // check if username is used
-        if (inDb(number, TABLENAME3))                      // If exist !!
-            return -1;
-        else                                         // Not exist, add new !!
-        {
-            PreparedStatement stm = null;
-            try {
-                stm = con.prepareStatement("INSERT INTO " + TABLENAME3 + " (Number, TakesPartInString) VALUES (?, ?)");
-
-                stm.setString(1, number);
-                stm.setString(2, jsonString); // Make the statement ready
-
-
-                // Execute to update
-                int insertedLines = stm.executeUpdate();
-                stm.close();
-
-                if (insertedLines > 0)
-                    return 1;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }
-    }
-
-    public int saveMovieInDB(String number, String jsonString) {
-        if (!connectedToDB)                          // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
-        // check if username is used
-        if (inDb(number, TABLENAME4))                      // If exist !!
-            return -1;
-        else                                         // Not exist, add new !!
-        {
-            PreparedStatement stm = null;
-            try {
-                stm = con.prepareStatement("INSERT INTO " + TABLENAME4 + " (Number, MovieString) VALUES (?, ?)");
-
-                stm.setString(1, number);
-                stm.setString(2, jsonString); // Make the statement ready
-
-
-                // Execute to update
-                int insertedLines = stm.executeUpdate();
-                stm.close();
-
-                if (insertedLines > 0)
-                    return 1;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }
-    }
-
-    public void dropTables(String table) {
-        PreparedStatement stm = null;
-        try {
-            stm = con.prepareStatement("DROP TABLE " + table);
-            stm.executeUpdate();
-            stm.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void dropAllTables() {
-        PreparedStatement stm = null;
-        try {
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME);
-            stm.executeUpdate();
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME2);
-            stm.executeUpdate();
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME3);
-            stm.executeUpdate();
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME4);
-            stm.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Fetch the ActorString == JSON string to be used with the JSON constructor
+     * @param i Movie ID
+     * @return ActorString
+     */
     public String fetchMovieActorCredit(String i) {
-        ResultSet res;
+        ResultSet res = null;
         String statement = "SELECT Number, ActorString FROM " +TABLENAME2
                 + "\n WHERE Number=?";
 
@@ -425,12 +414,20 @@ public class InformationDB {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try { res.close(); } catch (Exception e) { /* ignored */ }
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
 
-    public String fetchTakesPartIn(String i) {
-        ResultSet res;
+    /**
+     * Fetch which movies a actor takes part in
+     * @param i Actor ID
+     * @return TakesPartInString
+     */
+    String fetchTakesPartIn(String i) {
+        ResultSet res = null;
         String statement = "SELECT Number, TakesPartInString FROM " +TABLENAME3
                 + "\n WHERE Number=?";
 
@@ -455,12 +452,20 @@ public class InformationDB {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try { res.close(); } catch (Exception e) { /* ignored */ }
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
 
+    /**
+     * Fetch a movie based in Movie ID
+     * @param i Movie ID
+     * @return Movie String
+     */
     public String fetchMovie(String i) {
-        ResultSet res;
+        ResultSet res = null;
         String statement = "SELECT Number, MovieString FROM " +TABLENAME4
                 + "\n WHERE Number=?";
 
@@ -485,9 +490,52 @@ public class InformationDB {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try { res.close(); } catch (Exception e) { /* ignored */ }
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
+
+    /**
+     * Drop a table from the db
+     * @param table table name
+     */
+    void dropTables(String table) {
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement("DROP TABLE " + table);
+            stm.executeUpdate();
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
+        }
+    }
+
+    /**
+     * Drop all tables in the DB
+     */
+    void dropAllTables() {
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME);
+            stm.executeUpdate();
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME2);
+            stm.executeUpdate();
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME3);
+            stm.executeUpdate();
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME4);
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try { stm.close(); } catch (Exception e) { /* ignored */ }
+        }
+    }
+
+
 
 
 }

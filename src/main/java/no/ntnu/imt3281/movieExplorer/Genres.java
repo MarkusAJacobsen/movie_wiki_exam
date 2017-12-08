@@ -9,14 +9,14 @@ import java.util.Objects;
  * This class checks if a genre is registered in the DB
  * If not, go to themoviedb and fetch an updated list
  */
-public class Genres {
+class Genres {
 
     /**
      * Checks if a genre is in DB if not fetch from themovieDB
      * @param i External ID to fetch
      * @return corresponding name of genre to the i
      */
-    public static String resolve(int i) {
+    static String resolve(int i) {
         InformationDB DB = InformationDB.getInstance();
 
         if(!DB.inDb(Integer.toString(i), "Genres")) {

@@ -14,8 +14,8 @@ public class SearchTest {
 		// Return the result as a JSON object.
 		JSON result = Search.multiSearch("Bruce Willis");
 		assertEquals(2, result.get("results").size());									// A search for Bruce Willis return two results
-		assertEquals("Bruce Willis", result.get("results").get(0).getValue("name"));		// The first is to Bruce Willis
-		assertEquals("person", result.get("results").get(0).getValue("media_type"));		// the person
+		assertEquals("Bruce Willis", result.get("results").get(1).getValue("name"));		// The first is to Bruce Willis
+		assertEquals("person", result.get("results").get(1).getValue("media_type"));		// the person
 	}
 	
 	@Test

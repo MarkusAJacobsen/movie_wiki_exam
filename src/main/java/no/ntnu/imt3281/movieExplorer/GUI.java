@@ -5,16 +5,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
+
 
 
 import java.io.File;
@@ -40,7 +36,7 @@ public class GUI{
     @FXML
     /**
      * Called when the object has been created and connected to the fxml file. All components defined in the fxml file is 
-     * ready and available.
+     * ready and available. Also sets up a EventHandler for the searchResult
      */
     public void initialize() {
 		searchResult.setRoot(searchResultRootNode);
@@ -48,32 +44,40 @@ public class GUI{
 		searchResult.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventHandle);
 	}
 
+	/**
+	 * Mouse event handler for the search view, manages that the correct function is
+	 * called depending on media Type
+	 * @param event A clicked item
+	 */
 	private void handleMouseClicked(MouseEvent event) {
     	TreeItem<SearchResultItem> selectedNode = searchResult.getSelectionModel().getSelectedItem();
 		String mediaType = selectedNode.getValue().media_type;
-
-		switch (mediaType) {
-			case "person":
-				searchMovies(selectedNode.getValue().id, selectedNode);
-				break;
-			case "movie":
-				try {
-					createDetailedPane(selectedNode.getValue().id);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				searchActors(selectedNode.getValue().id, selectedNode);
-				break;
-			default: break;
+		if(selectedNode.isExpanded()) {
+			selectedNode.setExpanded(false);
+		} else {
+			switch (mediaType) {
+				case "person":
+					searchMovies(selectedNode.getValue().id, selectedNode);
+					break;
+				case "movie":
+					try {
+						createDetailedPane(selectedNode.getValue().id);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					searchActors(selectedNode.getValue().id, selectedNode);
+					break;
+				default: break;
+			}
 		}
 	}
 
 
-	private void loadDetailedPane() throws IOException {
-		Pane newPane =  FXMLLoader.load(getClass().getResource("detailedView.fxml"));
-		detailPane.getChildren().add(newPane);
-	}
-
+	/**
+	 * Creates the detailed pane based on selected movie
+	 * @param id Movie ID
+	 * @throws IOException Error in getting the fxml
+	 */
 	private void createDetailedPane(long id) throws IOException {
     	if(!detailPane.getChildren().isEmpty()){
     		detailPane.getChildren().remove(0, detailPane.getChildren().size());
@@ -84,13 +88,15 @@ public class GUI{
     	newPane.setController(controller);
     	Pane pane = newPane.load();
     	detailPane.getChildren().add(pane);
-
 	}
 
+	/**
+	 * Opens up a Directory Chooser, based on the selected directory will preferences be
+	 * updated
+	 * @param event Mouse event
+	 */
 	@FXML
-	void openBaseDirectoryChooser(ActionEvent event) throws IOException {
-    	System.out.print("Hey");
-
+	void openBaseDirectoryChooser(ActionEvent event) {
 		final DirectoryChooser directoryChooser =
 				new DirectoryChooser();
 		final File selectedDirectory =
@@ -102,6 +108,9 @@ public class GUI{
 		createDirectories();
 	}
 
+	/**
+	 * Creates the different resource folders, one for Poster, Still, Profile, BackDrop and Logo
+	 */
 	private void createDirectories() {
     	String baseURL = preferences.getBasedirectory();
     	String [] folders = {"w1280", "w500", "w780", "h623", "w300"};
@@ -115,6 +124,12 @@ public class GUI{
 		}
 	}
 
+	/**
+	 * Drops the different tables in the DB, because of this will db never have a size
+	 * of zero, did this to keep some integrity in the DB, and Derby highly
+	 * discourages to mess with their files directly
+	 * @param event
+	 */
 	@FXML
 	private void deleteDB(MouseEvent event) {
     	InformationDB db = InformationDB.getInstance();
@@ -122,6 +137,10 @@ public class GUI{
 		openAboutDialog(new ActionEvent());
 	}
 
+	/**
+	 * Deletes the different resource folders
+	 * @param event
+	 */
 	@FXML
 	private void deleteCache(MouseEvent event) {
 		String [] folders = {"w1280", "w500", "w780", "h623", "w300"};
@@ -136,6 +155,12 @@ public class GUI{
 		openAboutDialog(new ActionEvent());
 	}
 
+	/**
+	 * When about is pressed spawn a dialog window
+	 * this window houses the information about space the application
+	 * holds
+	 * @param event
+	 */
 	@FXML
 	void openAboutDialog(ActionEvent event) {
     	Dialog<String> dialog = new Dialog<>();
@@ -227,6 +252,11 @@ public class GUI{
     		searchResults.setExpanded(true);
     }
 
+	/**
+	 * Search for movies in which a selected actor has taken part in
+	 * @param id Actor ID
+	 * @param parent Parent in treeView
+	 */
 	private void searchMovies(long id, TreeItem<SearchResultItem> parent) {
     	int intId = (int) id;
     	JSON result = Search.takesPartIn(intId);
@@ -242,6 +272,11 @@ public class GUI{
 		parent.setExpanded(true);
 	}
 
+	/**
+	 * Search for actors in a selected movie
+	 * @param id Movie id
+	 * @param parent Parent in treeView
+	 */
 	private void searchActors(long id, TreeItem<SearchResultItem> parent) {
 		int intId = (int) id;
 		JSON result = Search.actors(intId);
@@ -306,7 +341,7 @@ public class GUI{
 	 * @param path Path to folder or file to be deleted
 	 * @throws IOException IO error
 	 */
-	public static void deleteFileOrFolder(final Path path) throws IOException {
+	private static void deleteFileOrFolder(final Path path) throws IOException {
 		Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
 			@Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
 					throws IOException {
@@ -330,7 +365,7 @@ public class GUI{
 				return CONTINUE;
 			}
 		});
-	};
+	}
 
 
 	class SearchResultItem {

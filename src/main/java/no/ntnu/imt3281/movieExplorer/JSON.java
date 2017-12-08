@@ -13,9 +13,9 @@ import java.util.Set;
  * obj and key field is used.
  */
 public class JSON {
-    public ArrayList<JSON> obj;
-    public String key;
-    public Object value;
+    private ArrayList<JSON> obj;
+    private String key;
+    private Object value;
 
     public JSON(String jsonInput) {
         this.obj = new ArrayList<>();
@@ -43,7 +43,7 @@ public class JSON {
 
     /**
      * Constructor for a JSONArray
-     * @param tmp
+     * @param tmp JSONArray
      */
     public JSON(JSONArray tmp) {
         this.obj = new ArrayList<>();
@@ -66,7 +66,7 @@ public class JSON {
      * @param keys - posts key values
      * @param posts - All the JSONObjects created from a JSON input string
      */
-    public void addInstance(Set<String> keys, JSONObject posts) {
+    private void addInstance(Set<String> keys, JSONObject posts) {
         Object tmp;
         for(String query : keys) {
             tmp = posts.get(query);
@@ -90,7 +90,7 @@ public class JSON {
      * @param query - Key value to find
      * @return Found objective
      */
-    public Object getValue(String query) {
+    Object getValue(String query) {
         if(this.value == null) {
             return this.get(query).value;
         }
@@ -99,8 +99,8 @@ public class JSON {
 
     /**
      * Loops through this.obj, if found return corresponding JSON object
-     * @param query
-     * @return
+     * @param query Query to find
+     * @return JSON or null if not found
      */
     public JSON get(String query) {
         for (JSON o : obj)  {
@@ -112,9 +112,9 @@ public class JSON {
 
     /**
      * Returns the size of a JSON object
-     * @return
+     * @return Size of obj
      */
-    public int size() {
+    int size() {
         return this.obj.size();
     }
 
@@ -126,10 +126,5 @@ public class JSON {
     public JSON get(int i)
     {
        return this.obj.get(i);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

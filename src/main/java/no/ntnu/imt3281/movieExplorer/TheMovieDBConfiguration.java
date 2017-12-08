@@ -1,7 +1,6 @@
 package no.ntnu.imt3281.movieExplorer;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,17 +14,19 @@ import java.nio.file.Paths;
  * This class setsup all configuration for images
  * by returning correct url and size for wanted image and type
  */
-public class TheMovieDBConfiguration {
-    public JSON configuration;
+class TheMovieDBConfiguration {
+    private JSON configuration;
     private String base_url = null;
     private PreferencesHandler preferences = PreferencesHandler.getPreferenceInstance();
+    private String delimiter = "/";
+    private String extention = "jpg";
 
     /**
      * Constructor takes a JSON string and creates a JSON to
      * represent the available configurations
      * @param json configuration string from themoviedb
      */
-    public TheMovieDBConfiguration(String json) {
+    TheMovieDBConfiguration(String json) {
         configuration = new JSON(json);
         base_url = (String) configuration.get(0).get(3).getValue("base_url");
     }
@@ -35,20 +36,21 @@ public class TheMovieDBConfiguration {
      * @param query image to include in URL
      * @return URL for BackDropImage
      */
-    public String getBackdropURL(String query) {
+    String getBackdropURL(String query) {
         String result;
         result = base_url;
         int size = configuration.get(0).get(2).size();
         size = size-2;
         String imageSize = (String) configuration.get(0).get(2).get(size).getValue("");
         String absolutePath = preferences.getBasedirectory();
-        Path path = Paths.get(absolutePath + "/" + imageSize + "/" + query);
 
+        Path path = Paths.get(absolutePath + delimiter + imageSize + delimiter + query);
+        Path pathToFolder = Paths.get(absolutePath+delimiter+imageSize);
         if(path.toFile().exists()){
             return String.valueOf(path);
         } else {
-            result = result.concat(imageSize+"/"+query);
-            return fetchAndSaveImage(path, result);
+            result = result.concat(imageSize+delimiter+query);
+            return fetchAndSaveImage(path, result, pathToFolder);
 
         }
     }
@@ -60,7 +62,7 @@ public class TheMovieDBConfiguration {
      * @param query image to include in URL
      * @return URL for LogoImage
      */
-    public String getLogoURL(String query) {
+    String getLogoURL(String query) {
         String result;
         result = base_url;
         int size = configuration.get(0).get(4).size();
@@ -68,12 +70,13 @@ public class TheMovieDBConfiguration {
         String imageSize = (String) configuration.get(0).get(4).get(size).getValue("");
         String absolutePath = preferences.getBasedirectory();
 
-        Path path = Paths.get(absolutePath+"/"+query);
+        Path path = Paths.get(absolutePath+delimiter+query);
+        Path pathToFolder = Paths.get(absolutePath+delimiter+imageSize);
         if(path.toFile().exists()){
             return String.valueOf(path);
         } else {
-            result = result.concat(imageSize+"/"+query);
-            return fetchAndSaveImage(path, result);
+            result = result.concat(imageSize+delimiter+query);
+            return fetchAndSaveImage(path, result, pathToFolder);
         }
     }
 
@@ -82,7 +85,7 @@ public class TheMovieDBConfiguration {
      * @param query image to include in URL
      * @return URL for Poster Image
      */
-    public String getPosterURL(String query) {
+    String getPosterURL(String query) {
         String result;
         result = base_url;
         int size = configuration.get(0).get(0).size();
@@ -90,12 +93,13 @@ public class TheMovieDBConfiguration {
         String imageSize = (String) configuration.get(0).get(0).get(size).getValue("");
         String absolutePath = preferences.getBasedirectory();
 
-        Path path = Paths.get(absolutePath+"/"+imageSize+"/"+query);
+        Path path = Paths.get(absolutePath+delimiter+imageSize+delimiter+query);
+        Path pathToFolder = Paths.get(absolutePath+delimiter+imageSize);
         if(path.toFile().exists()){
             return String.valueOf(path);
         } else {
             result = result.concat(imageSize+"/"+query);
-            return fetchAndSaveImage(path, result);
+            return fetchAndSaveImage(path, result, pathToFolder);
         }
     }
 
@@ -106,7 +110,7 @@ public class TheMovieDBConfiguration {
      * @param query image to include in URL
      * @return URL for Profile Image
      */
-    public String getProfileURL(String query) {
+    String getProfileURL(String query) {
         String result;
         result = base_url;
         int size = configuration.get(0).get(6).size();
@@ -114,12 +118,13 @@ public class TheMovieDBConfiguration {
         String imageSize = (String) configuration.get(0).get(6).get(size).getValue("");
         String absolutePath = preferences.getBasedirectory();
 
-        Path path = Paths.get(absolutePath+"/"+imageSize+"/"+query);
+        Path path = Paths.get(absolutePath+delimiter+imageSize+delimiter+query);
+        Path pathToFolder = Paths.get(absolutePath+delimiter+imageSize);
         if(path.toFile().exists()){
             return String.valueOf(path);
         } else {
-            result = result.concat(imageSize+"/"+query);
-            return fetchAndSaveImage(path, result);
+            result = result.concat(imageSize+delimiter+query);
+            return fetchAndSaveImage(path, result, pathToFolder);
         }
     }
 
@@ -128,7 +133,7 @@ public class TheMovieDBConfiguration {
      * @param query image to include in URL
      * @return URL for Still Image
      */
-    public String getStillURL(String query) {
+    String getStillURL(String query) {
         String result;
         result = base_url;
         int size = configuration.get(0).get(5).size();
@@ -136,16 +141,24 @@ public class TheMovieDBConfiguration {
         String imageSize = (String) configuration.get(0).get(5).get(size).getValue("");
         String absolutePath = preferences.getBasedirectory();
 
-        Path path = Paths.get(absolutePath+"/"+imageSize+"/"+query);
+        Path path = Paths.get(absolutePath+delimiter+imageSize+delimiter+query);
+        Path pathToFolder = Paths.get(absolutePath+delimiter+imageSize);
         if(path.toFile().exists()){
             return String.valueOf(path);
         } else {
             result = result.concat(imageSize+"/"+query);
-            return fetchAndSaveImage(path, result);
+            return fetchAndSaveImage(path, result, pathToFolder);
         }
     }
 
-    private String fetchAndSaveImage(Path path, String result) {
+    /**
+     * Will fetch a image from the WEB
+     * @param path Path to save the image
+     * @param result Path to the URL of the image
+     * @return String of image path
+     */
+    private String fetchAndSaveImage(Path path, String result, Path pathToFolder) {
+        folderExists(pathToFolder);
         //Conversion courtesy of https://stackoverflow.com/a/22972314/7036624
         BufferedImage imageFromURL = null;
         try {
@@ -158,13 +171,23 @@ public class TheMovieDBConfiguration {
         return String.valueOf(path);
     }
 
+    /**
+     * Saves the image on disk
+     * @param imageFromURL BufferedImage
+     * @param path Path to save the image
+     */
     private void saveImage(BufferedImage imageFromURL, String path) {
         File file = new File(path);
-        BufferedImage image = imageFromURL;
         try {
-            ImageIO.write(image, "jpg", file);  // ignore returned boolean
+            ImageIO.write(imageFromURL, extention, file);  // ignore returned boolean
         } catch(IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void folderExists(Path path) {
+        if(!path.toFile().exists()) {
+            path.toFile().mkdir();
         }
     }
 }

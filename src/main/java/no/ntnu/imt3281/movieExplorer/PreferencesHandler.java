@@ -5,7 +5,7 @@ import java.util.prefs.Preferences;
 /**
  * PreferenceHandler holds a users preferences, in this instance is it only baseDirectory
  */
-public class PreferencesHandler {
+class PreferencesHandler {
     private static final String BASEDIRECTORY= "BASE_DIR";
 
 
@@ -19,7 +19,7 @@ public class PreferencesHandler {
      * an instance of the object
      * @return Instance of PreferencesHandler
      */
-    public static PreferencesHandler getPreferenceInstance() {
+    static PreferencesHandler getPreferenceInstance() {
         if (instance == null) {
             instance = new PreferencesHandler();
             return instance;
@@ -35,7 +35,7 @@ public class PreferencesHandler {
      * Sets the base directory preference
      * @param basedirectory supplied absolute path
      */
-    public void setBasedirectory(String basedirectory) {
+    void setBasedirectory(String basedirectory) {
         this.root.put(BASEDIRECTORY, basedirectory);
     }
 
@@ -43,7 +43,7 @@ public class PreferencesHandler {
      * Gets saved base directory
      * @return basedirectory URL
      */
-    public String getBasedirectory() {
+    String getBasedirectory() {
         return (root.get(BASEDIRECTORY, ""));
     }
 }
