@@ -2,6 +2,9 @@ package no.ntnu.imt3281.movieExplorer;
 
 import java.util.prefs.Preferences;
 
+/**
+ * PreferenceHandler holds a users preferences, in this instance is it only baseDirectory
+ */
 public class PreferencesHandler {
     private static final String BASEDIRECTORY= "BASE_DIR";
 
@@ -28,10 +31,18 @@ public class PreferencesHandler {
         root = Preferences.userNodeForPackage(PreferencesHandler.class);
     }
 
+    /**
+     * Sets the base directory preference
+     * @param basedirectory supplied absolute path
+     */
     public void setBasedirectory(String basedirectory) {
         this.root.put(BASEDIRECTORY, basedirectory);
     }
 
+    /**
+     * Gets saved base directory
+     * @return basedirectory URL
+     */
     public String getBasedirectory() {
         return (root.get(BASEDIRECTORY, ""));
     }

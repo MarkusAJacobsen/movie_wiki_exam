@@ -13,6 +13,7 @@ import javafx.scene.text.Text;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -62,8 +63,7 @@ public class DetailedPaneController {
        //Conversion courtesy of https://stackoverflow.com/a/22972314/7036624
         BufferedImage imageFromURL = null;
         try {
-            URL url = new URL(imageURL);
-            imageFromURL = ImageIO.read(url);
+            imageFromURL = ImageIO.read(new File(imageURL));
             Image toFx = SwingFXUtils.toFXImage(imageFromURL, null);
             this.image.setImage(toFx);
         } catch (IOException e) {
