@@ -18,7 +18,8 @@ public class InformationDB {
     private static InformationDB instance = null;
     private static final String TABLENAME = "Genres";
     private static final String TABLENAME2 = "ActorsInMovie";
-    private static final String TABLENAME5 = "Movies";
+    private static final String TABLENAME3 = "TakesPartIn";
+    private static final String TABLENAME4 = "Movies";
 
     /**
      * Constructor, setsup connection and creates the table
@@ -37,6 +38,8 @@ public class InformationDB {
         }
         createTableGenres();                              // Create new Table
         createTableActorsCreditInMovie();
+        createTableTakesPartIn();
+        createTableMovies();
         connectedToDB = true;                       // Set connection to true
 
     }
@@ -111,6 +114,64 @@ public class InformationDB {
                 stm.execute("CREATE TABLE " + TABLENAME2 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
                         + "number VARCHAR(55), "
                         + "actorString CLOB, "
+                        + "PRIMARY KEY (id))");
+                stm.close();
+            }
+            catch (SQLException e2)
+            {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    private void createTableTakesPartIn() {
+        Statement stm = null;
+
+        try                                         // Check if table exist already
+        {
+            stm = con.createStatement();
+            ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME3);
+            tableExists.close();
+            stm.close();
+        }
+        catch(SQLException e1)
+        {
+            try                                     // Create the table
+            {
+                stm = con.createStatement();
+
+                stm.execute("CREATE TABLE " + TABLENAME3 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                        + "number VARCHAR(55), "
+                        + "takesPartInString CLOB, "
+                        + "PRIMARY KEY (id))");
+                stm.close();
+            }
+            catch (SQLException e2)
+            {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    private void createTableMovies() {
+        Statement stm = null;
+
+        try                                         // Check if table exist already
+        {
+            stm = con.createStatement();
+            ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME4);
+            tableExists.close();
+            stm.close();
+        }
+        catch(SQLException e1)
+        {
+            try                                     // Create the table
+            {
+                stm = con.createStatement();
+
+                stm.execute("CREATE TABLE " + TABLENAME4 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                        + "number VARCHAR(55), "
+                        + "movieString CLOB, "
                         + "PRIMARY KEY (id))");
                 stm.close();
             }
@@ -256,10 +317,68 @@ public class InformationDB {
         }
     }
 
-    public void dropTables() {
+    public int saveTakesPartInInDB(String number, String jsonString) {
+        if (!connectedToDB)                          // Is there connection with DB?
+            throw new IllegalStateException("Not contact with DB");
+        // check if username is used
+        if (inDb(number, TABLENAME3))                      // If exist !!
+            return -1;
+        else                                         // Not exist, add new !!
+        {
+            PreparedStatement stm = null;
+            try {
+                stm = con.prepareStatement("INSERT INTO " + TABLENAME3 + " (Number, TakesPartInString) VALUES (?, ?)");
+
+                stm.setString(1, number);
+                stm.setString(2, jsonString); // Make the statement ready
+
+
+                // Execute to update
+                int insertedLines = stm.executeUpdate();
+                stm.close();
+
+                if (insertedLines > 0)
+                    return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+    }
+
+    public int saveMovieInDB(String number, String jsonString) {
+        if (!connectedToDB)                          // Is there connection with DB?
+            throw new IllegalStateException("Not contact with DB");
+        // check if username is used
+        if (inDb(number, TABLENAME4))                      // If exist !!
+            return -1;
+        else                                         // Not exist, add new !!
+        {
+            PreparedStatement stm = null;
+            try {
+                stm = con.prepareStatement("INSERT INTO " + TABLENAME4 + " (Number, MovieString) VALUES (?, ?)");
+
+                stm.setString(1, number);
+                stm.setString(2, jsonString); // Make the statement ready
+
+
+                // Execute to update
+                int insertedLines = stm.executeUpdate();
+                stm.close();
+
+                if (insertedLines > 0)
+                    return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+    }
+
+    public void dropTables(String table) {
         PreparedStatement stm = null;
         try {
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME2);
+            stm = con.prepareStatement("DROP TABLE " + table);
             stm.executeUpdate();
             stm.close();
         } catch (SQLException e) {
@@ -288,6 +407,66 @@ public class InformationDB {
             else
             {
                 String result = res.getString("ActorString");
+                stm.close();
+                return result;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String fetchTakesPartIn(String i) {
+        ResultSet res;
+        String statement = "SELECT Number, TakesPartInString FROM " +TABLENAME3
+                + "\n WHERE Number=?";
+
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement(statement);
+            // Prepare and execute the statment
+            stm.setString(1, i);
+            res = stm.executeQuery();
+
+            if (!res.next())
+            {
+                stm.close();
+                return "";
+            }
+            // User found
+            else
+            {
+                String result = res.getString("TakesPartInString");
+                stm.close();
+                return result;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String fetchMovie(String i) {
+        ResultSet res;
+        String statement = "SELECT Number, MovieString FROM " +TABLENAME4
+                + "\n WHERE Number=?";
+
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement(statement);
+            // Prepare and execute the statment
+            stm.setString(1, i);
+            res = stm.executeQuery();
+
+            if (!res.next())
+            {
+                stm.close();
+                return "";
+            }
+            // User found
+            else
+            {
+                String result = res.getString("MovieString");
                 stm.close();
                 return result;
             }

@@ -65,23 +65,41 @@ public class Search {
      * @return new JSON object with the body of the call
      */
     public static JSON takesPartIn(int i) {
+        InformationDB db = InformationDB.getInstance();
         String req;
-        try {
-            req = Unirest.get("https://api.themoviedb.org/3/discover/movie?with_people="+i+"&page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
-            return new JSON(req);
-        } catch (UnirestException e) {
-            e.printStackTrace();
+        if(!db.inDb(Integer.toString(i), "TakesPartIn")) {
+            try {
+                req = Unirest.get("https://api.themoviedb.org/3/discover/movie?with_people=" + i + "&page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+                JSON o = new JSON(req);
+                db.saveTakesPartInInDB(Integer.toString(i), req);
+                return o;
+            } catch (UnirestException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String tmp = db.fetchTakesPartIn(Integer.toString(i));
+            return new JSON(tmp);
         }
         return null;
     }
 
     public static JSON movie(long i) {
+        InformationDB db = InformationDB.getInstance();
         String req;
-        try {
-            req = Unirest.get("https://api.themoviedb.org/3/movie/"+i+"?language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
-            return new JSON(req);
-        } catch (UnirestException e) {
-            e.printStackTrace();
+        String id;
+        if(!db.inDb(Long.toString(i), "Movies")) {
+            try {
+                req = Unirest.get("https://api.themoviedb.org/3/movie/" + i + "?language=en-US&api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+                JSON o = new JSON(req);
+                id = o.get(9).getValue("id").toString();
+                db.saveMovieInDB(id, req);
+                return o;
+            } catch (UnirestException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String tmp = db.fetchMovie(Long.toString(i));
+            return new JSON(tmp);
         }
         return null;
     }
