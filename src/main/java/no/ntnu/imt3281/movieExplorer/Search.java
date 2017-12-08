@@ -10,6 +10,9 @@ import java.util.logging.Logger;
 
 import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
+/**
+ * The search class is responsible for the different search options
+ */
 class Search {
     private static final String apiKey = "a47f70eb03a70790f5dd711f4caea42d";
     private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);

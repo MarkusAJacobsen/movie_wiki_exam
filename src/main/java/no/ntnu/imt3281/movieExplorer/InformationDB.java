@@ -25,7 +25,7 @@ public class InformationDB {
 
     /**
      * Constructor, setsup connection and creates the table
-     * @throws SQLException
+     * @throws SQLException Error in getting connection
      */
     private InformationDB() throws SQLException
     {
@@ -221,6 +221,7 @@ public class InformationDB {
     /**
      * Checks if an external ID is registered in the DB before
      * @param id External ID to check if exist
+     * @param tableName name of the table to check against
      * @return true/false found/not Found
      */
     boolean inDb(String id, String tableName) {

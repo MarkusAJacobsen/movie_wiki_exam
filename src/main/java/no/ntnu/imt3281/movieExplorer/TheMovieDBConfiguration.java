@@ -159,6 +159,7 @@ class TheMovieDBConfiguration {
      * Will fetch a image from the WEB
      * @param path Path to save the image
      * @param result Path to the URL of the image
+     * @param pathToFolder Path to folder without image to check if folder exist
      * @return String of image path
      */
     private String fetchAndSaveImage(Path path, String result, Path pathToFolder) {

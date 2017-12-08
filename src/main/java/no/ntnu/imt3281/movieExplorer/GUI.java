@@ -25,7 +25,10 @@ import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
 import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
-
+/**
+ * The GUI class is the GUI.fxml's controller with responsibility for
+ * everything behind the curtains with the main GUI
+ */
 public class GUI{
     @FXML private TextField searchField;
     @FXML private Pane detailPane;
@@ -163,6 +166,7 @@ public class GUI{
 	 * When about is pressed spawn a dialog window
 	 * this window houses the information about space the application
 	 * holds
+	 * Inspiration: https://examples.javacodegeeks.com/desktop-java/javafx/dialog-javafx/javafx-dialog-example/
 	 * @param event
 	 */
 	@FXML
