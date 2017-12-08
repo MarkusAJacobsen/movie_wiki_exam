@@ -37,14 +37,23 @@ public class TheMovieDBConfiguration {
      */
     public String getBackdropURL(String query) {
         String result;
-
         result = base_url;
         int size = configuration.get(0).get(2).size();
         size = size-2;
-        result = result.concat((String) configuration.get(0).get(2).get(size).getValue(""));
-        result = result.concat("/" + query);
-        return result;
+        String imageSize = (String) configuration.get(0).get(2).get(size).getValue("");
+        String absolutePath = preferences.getBasedirectory();
+        Path path = Paths.get(absolutePath+"/"+imageSize+"/"+query);
+
+        if(path.toFile().exists()){
+            return String.valueOf(path);
+        } else {
+            result = result.concat(imageSize+"/"+query);
+            return fetchAndSaveImage(path, result);
+
+        }
     }
+
+
 
     /**
      * Returns correct URL for Logo Image
@@ -53,13 +62,19 @@ public class TheMovieDBConfiguration {
      */
     public String getLogoURL(String query) {
         String result;
-
         result = base_url;
         int size = configuration.get(0).get(4).size();
         size = size-2;
-        result = result.concat((String) configuration.get(0).get(4).get(size).getValue(""));
-        result = result.concat("/" + query);
-        return result;
+        String imageSize = (String) configuration.get(0).get(4).get(size).getValue("");
+        String absolutePath = preferences.getBasedirectory();
+
+        Path path = Paths.get(absolutePath+"/"+query);
+        if(path.toFile().exists()){
+            return String.valueOf(path);
+        } else {
+            result = result.concat(imageSize+"/"+query);
+            return fetchAndSaveImage(path, result);
+        }
     }
 
     /**
@@ -80,18 +95,8 @@ public class TheMovieDBConfiguration {
             return String.valueOf(path);
         } else {
             result = result.concat(imageSize+"/"+query);
-            //Conversion courtesy of https://stackoverflow.com/a/22972314/7036624
-            BufferedImage imageFromURL = null;
-            try {
-                URL url = new URL(result);
-                imageFromURL = ImageIO.read(url);
-                saveImage(imageFromURL, String.valueOf(path));
-                return String.valueOf(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return fetchAndSaveImage(path, result);
         }
-        return null;
     }
 
 
@@ -103,13 +108,19 @@ public class TheMovieDBConfiguration {
      */
     public String getProfileURL(String query) {
         String result;
-
         result = base_url;
         int size = configuration.get(0).get(6).size();
         size = size-2;
-        result = result.concat((String) configuration.get(0).get(6).get(size).getValue(""));
-        result = result.concat("/" + query);
-        return result;
+        String imageSize = (String) configuration.get(0).get(6).get(size).getValue("");
+        String absolutePath = preferences.getBasedirectory();
+
+        Path path = Paths.get(absolutePath+"/"+imageSize+"/"+query);
+        if(path.toFile().exists()){
+            return String.valueOf(path);
+        } else {
+            result = result.concat(imageSize+"/"+query);
+            return fetchAndSaveImage(path, result);
+        }
     }
 
     /**
@@ -126,6 +137,20 @@ public class TheMovieDBConfiguration {
         result = result.concat((String) configuration.get(0).get(5).get(size).getValue(""));
         result = result.concat("/" + query);
         return result;
+    }
+
+    private String fetchAndSaveImage(Path path, String result) {
+        //Conversion courtesy of https://stackoverflow.com/a/22972314/7036624
+        BufferedImage imageFromURL = null;
+        try {
+            URL url = new URL(result);
+            imageFromURL = ImageIO.read(url);
+            saveImage(imageFromURL, String.valueOf(path));
+            return String.valueOf(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void saveImage(BufferedImage imageFromURL, String path) {
