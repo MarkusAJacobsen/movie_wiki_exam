@@ -45,11 +45,32 @@ public class GUI{
 				searchMovies(selectedNode.getValue().id, selectedNode);
 				break;
 			case "movie":
-
+				try {
+					createDetailedPane(selectedNode.getValue().id);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				searchActors(selectedNode.getValue().id, selectedNode);
 				break;
 			default: break;
 		}
+	}
+	private void loadDetailedPane() throws IOException {
+		Pane newPane =  FXMLLoader.load(getClass().getResource("detailedView.fxml"));
+		detailPane.getChildren().add(newPane);
+	}
+
+	private void createDetailedPane(long id) throws IOException {
+    	if(!detailPane.getChildren().isEmpty()){
+    		detailPane.getChildren().remove(0, detailPane.getChildren().size());
+		}
+
+    	DetailedPaneController controller = new DetailedPaneController(id);
+    	FXMLLoader newPane = new FXMLLoader(getClass().getResource("detailedView.fxml"));
+    	newPane.setController(controller);
+    	Pane pane = newPane.load();
+    	detailPane.getChildren().add(pane);
+
 	}
 
 	@FXML
@@ -101,10 +122,6 @@ public class GUI{
 		parent.setExpanded(true);
 	}
 
-	private void loadDetailedPane() throws IOException {
-		Pane newPane =  FXMLLoader.load(getClass().getResource("detailedView.fxml"));
-		detailPane.getChildren().add(newPane);
-	}
 
 	class SearchResultItem {
     		private String media_type = "";
