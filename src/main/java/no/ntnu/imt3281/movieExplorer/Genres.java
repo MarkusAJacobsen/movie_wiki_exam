@@ -19,7 +19,7 @@ public class Genres {
     public static String resolve(int i) {
         InformationDB DB = InformationDB.getInstance();
 
-        if(!DB.GenreInDb(Integer.toString(i))) {
+        if(!DB.inDb(Integer.toString(i), "Genres")) {
             String reqMovie, reqTv;
             JSON objMovie, objTv;
             try {

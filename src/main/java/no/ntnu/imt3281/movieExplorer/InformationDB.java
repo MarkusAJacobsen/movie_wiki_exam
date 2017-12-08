@@ -1,5 +1,8 @@
 package no.ntnu.imt3281.movieExplorer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.*;
 
 /**
@@ -14,8 +17,8 @@ public class InformationDB {
     private boolean connectedToDB = false;
     private static InformationDB instance = null;
     private static final String TABLENAME = "Genres";
-    private static final String TABLENAME2 = "Actors";
-    private static final String TABLENAME3 = "Movies";
+    private static final String TABLENAME2 = "ActorsInMovie";
+    private static final String TABLENAME5 = "Movies";
 
     /**
      * Constructor, setsup connection and creates the table
@@ -32,10 +35,13 @@ public class InformationDB {
         {
             con = DriverManager.getConnection(url + ";create=true");
         }
-        createTable();                              // Create new Table
+        createTableGenres();                              // Create new Table
+        createTableActorsCreditInMovie();
         connectedToDB = true;                       // Set connection to true
 
     }
+
+
 
     /**
      * This DB is sat up as a singleton, so if it has been instantiated
@@ -57,7 +63,7 @@ public class InformationDB {
      * Creates a table with to fields, number and name representing the field from
      * themoviedb. Also has an internal incrementor
      */
-    private void createTable() {
+    private void createTableGenres() {
         Statement stm = null;
 
         try                                         // Check if table exist already
@@ -72,16 +78,45 @@ public class InformationDB {
             try                                     // Create the table
             {
                 stm = con.createStatement();
-                stm.execute("CREATE TABLE " + TABLENAME +"(id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                stm.execute("CREATE TABLE  " + TABLENAME +"(id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
                        + "number VARCHAR(255) NOT NULL, "
                        + " name varchar(255), "
                        + " PRIMARY KEY ( id ))");
-                
+
                 stm.close();
             }
             catch (SQLException e2)
             {
                e2.printStackTrace();
+            }
+        }
+    }
+
+    private void createTableActorsCreditInMovie() {
+        Statement stm = null;
+
+        try                                         // Check if table exist already
+        {
+            stm = con.createStatement();
+            ResultSet tableExists = stm.executeQuery("SELECT * FROM "+ TABLENAME2);
+            tableExists.close();
+            stm.close();
+        }
+        catch(SQLException e1)
+        {
+            try                                     // Create the table
+            {
+                stm = con.createStatement();
+
+                stm.execute("CREATE TABLE " + TABLENAME2 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                        + "number VARCHAR(55), "
+                        + "actorString CLOB, "
+                        + "PRIMARY KEY (id))");
+                stm.close();
+            }
+            catch (SQLException e2)
+            {
+                e2.printStackTrace();
             }
         }
     }
@@ -96,7 +131,7 @@ public class InformationDB {
         if (!connectedToDB)                          // Is there connection with DB?
             throw new IllegalStateException("Not contact with DB");
         // check if username is used
-        if (GenreInDb(id))                      // If exist !!
+        if (inDb(id, TABLENAME))                      // If exist !!
         {
             return -1;
         }
@@ -107,7 +142,7 @@ public class InformationDB {
                 stm = con.prepareStatement("INSERT INTO "+ TABLENAME+" (Number, Name) VALUES (?, ?)");
 
                 stm.setString(1, id); // Make the statement ready
-                stm.setString(2, name); // hashed password
+                stm.setString(2, name);
 
                 // Execute to update
                 int insertedLines = stm.executeUpdate();
@@ -127,9 +162,9 @@ public class InformationDB {
      * @param id External ID to check if exist
      * @return true/false found/not Found
      */
-    public boolean GenreInDb(String id) {
+    public boolean inDb(String id, String tableName) {
         ResultSet res;                              // Variable to store the result
-        String statement = "SELECT Number FROM " +TABLENAME
+        String statement = "SELECT Number FROM " +tableName
                 + "\n WHERE Number=?";
 
         PreparedStatement stm = null;
@@ -155,6 +190,7 @@ public class InformationDB {
         }
         return false;
     }
+
 
     /**
      * Fetch the "name" field of a DB post
@@ -190,4 +226,75 @@ public class InformationDB {
         }
         return "";
     }
+
+    public int saveMovieCreditInDB(String number, String jsonString) {
+        if (!connectedToDB)                          // Is there connection with DB?
+            throw new IllegalStateException("Not contact with DB");
+        // check if username is used
+        if (inDb(number, TABLENAME2))                      // If exist !!
+            return -1;
+        else                                         // Not exist, add new !!
+        {
+            PreparedStatement stm = null;
+            try {
+                stm = con.prepareStatement("INSERT INTO " + TABLENAME2 + " (Number, ActorString) VALUES (?, ?)");
+
+                stm.setString(1, number);
+                stm.setString(2, jsonString); // Make the statement ready
+
+
+                // Execute to update
+                int insertedLines = stm.executeUpdate();
+                stm.close();
+
+                if (insertedLines > 0)
+                    return 1;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+    }
+
+    public void dropTables() {
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME2);
+            stm.executeUpdate();
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String fetchMovieActorCredit(String i) {
+        ResultSet res;
+        String statement = "SELECT Number, ActorString FROM " +TABLENAME2
+                + "\n WHERE Number=?";
+
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement(statement);
+            // Prepare and execute the statment
+            stm.setString(1, i);
+            res = stm.executeQuery();
+
+            if (!res.next())
+            {
+                stm.close();
+                return "";
+            }
+            // User found
+            else
+            {
+                String result = res.getString("ActorString");
+                stm.close();
+                return result;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }

@@ -37,12 +37,23 @@ public class Search {
      * @return new JSON object with the body of the call
      */
     public static JSON actors(int i) {
+        InformationDB db = InformationDB.getInstance();
         String req;
-        try {
-            req = Unirest.get("https://api.themoviedb.org/3/movie/"+i+"/credits?api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
-            return new JSON(req);
-        } catch (UnirestException e) {
-            e.printStackTrace();
+        String id;
+        if(!db.inDb(Integer.toString(i), "ActorsInMovie")) {
+            try {
+                req = Unirest.get("https://api.themoviedb.org/3/movie/" + i + "/credits?api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
+                JSON o = new JSON(req);
+                id = o.get(1).getValue("id").toString();
+                db.saveMovieCreditInDB(id, req);
+                return o;
+            } catch (UnirestException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String tmp = db.fetchMovieActorCredit(Integer.toString(i));
+            return new JSON(tmp);
+
         }
         return null;
     }
