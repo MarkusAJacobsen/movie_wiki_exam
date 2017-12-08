@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
-import static java.nio.file.Files.exists;
 
 
 public class GUI{
@@ -117,13 +116,14 @@ public class GUI{
 	}
 
 	@FXML
-	void deleteDB(MouseEvent event) {
+	private void deleteDB(MouseEvent event) {
+    	InformationDB db = InformationDB.getInstance();
+    	db.dropAllTables();
 		openAboutDialog(new ActionEvent());
-
 	}
 
 	@FXML
-	void deleteCache(MouseEvent event) {
+	private void deleteCache(MouseEvent event) {
 		String [] folders = {"w1280", "w500", "w780", "h623", "w300"};
 		for(String folder : folders) {
 			Path path = Paths.get(preferences.getBasedirectory()+"/"+folder);
@@ -161,7 +161,11 @@ public class GUI{
 		path = Paths.get(preferences.getBasedirectory()+"/h623");
 		long profile = calculateFolderSize(path);
 
-		Label label8 = new Label();
+		String wd = System.getProperty("user.dir");
+		path = Paths.get(wd+"/genres.db/seg0");
+		long dbSize = calculateFolderSize(path);
+
+		Label label8 = new Label(dbSize/1000 + " KB");
 		Label label9 = new Label(PosterBilder/1000 + " KB");
 		Label label10 = new Label(profile/1000 + " KB");
 		Label label11 = new Label(BackDrop/1000 + " KB");

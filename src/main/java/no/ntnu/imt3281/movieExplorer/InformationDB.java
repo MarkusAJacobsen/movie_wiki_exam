@@ -383,6 +383,22 @@ public class InformationDB {
         }
     }
 
+    public void dropAllTables() {
+        PreparedStatement stm = null;
+        try {
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME);
+            stm.executeUpdate();
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME2);
+            stm.executeUpdate();
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME3);
+            stm.executeUpdate();
+            stm = con.prepareStatement("DROP TABLE " + TABLENAME4);
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String fetchMovieActorCredit(String i) {
         ResultSet res;
         String statement = "SELECT Number, ActorString FROM " +TABLENAME2
@@ -472,5 +488,6 @@ public class InformationDB {
         }
         return "";
     }
+
 
 }
