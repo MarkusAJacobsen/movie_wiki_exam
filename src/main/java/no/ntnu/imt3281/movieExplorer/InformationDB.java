@@ -1,6 +1,10 @@
 package no.ntnu.imt3281.movieExplorer;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 /**
  * GenresDB is the database controller for the Genres DB.
@@ -17,6 +21,7 @@ public class InformationDB {
     private static final String TABLENAME2 = "ActorsInMovie";
     private static final String TABLENAME3 = "TakesPartIn";
     private static final String TABLENAME4 = "Movies";
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
     /**
      * Constructor, setsup connection and creates the table
@@ -51,7 +56,7 @@ public class InformationDB {
             try {
                 instance = new InformationDB();
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             }
         }
         return instance;
@@ -81,7 +86,7 @@ public class InformationDB {
 
                 stm.close();
             } catch (SQLException e2) {
-               e2.printStackTrace();
+                LOGGER.log(Level.SEVERE, e2.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -109,7 +114,7 @@ public class InformationDB {
                         + "PRIMARY KEY (id))");
                 stm.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();
+                LOGGER.log(Level.SEVERE, e2.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -137,7 +142,7 @@ public class InformationDB {
                         + "PRIMARY KEY (id))");
                 stm.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();
+                LOGGER.log(Level.SEVERE, e2.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -165,7 +170,8 @@ public class InformationDB {
                         + "PRIMARY KEY (id))");
                 stm.close();
             } catch (SQLException e2) {
-                e2.printStackTrace();
+                LOGGER.log(Level.SEVERE, e2.toString());
+
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -204,7 +210,7 @@ public class InformationDB {
                 if (insertedLines > 0)
                     return 1;
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -241,7 +247,7 @@ public class InformationDB {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { res.close(); } catch (Exception e) { /* ignored */ }
             try { stm.close(); } catch (Exception e) { /* ignored */ }
@@ -275,7 +281,7 @@ public class InformationDB {
                 if (insertedLines > 0)
                     return 1;
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -306,7 +312,7 @@ public class InformationDB {
                 if (insertedLines > 0)
                     return 1;
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -337,7 +343,7 @@ public class InformationDB {
                 if (insertedLines > 0)
                     return 1;
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             } finally {
                 try { stm.close(); } catch (Exception e) { /* ignored */ }
             }
@@ -375,7 +381,7 @@ public class InformationDB {
                 return result;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { res.close(); } catch (Exception e) { /* ignored */ }
             try { stm.close(); } catch (Exception e) { /* ignored */ }
@@ -413,7 +419,7 @@ public class InformationDB {
                 return result;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { res.close(); } catch (Exception e) { /* ignored */ }
             try { stm.close(); } catch (Exception e) { /* ignored */ }
@@ -451,7 +457,7 @@ public class InformationDB {
                 return result;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { res.close(); } catch (Exception e) { /* ignored */ }
             try { stm.close(); } catch (Exception e) { /* ignored */ }
@@ -489,7 +495,7 @@ public class InformationDB {
                 return result;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { res.close(); } catch (Exception e) { /* ignored */ }
             try { stm.close(); } catch (Exception e) { /* ignored */ }
@@ -508,7 +514,7 @@ public class InformationDB {
             stm.executeUpdate();
             stm.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { stm.close(); } catch (Exception e) { /* ignored */ }
         }
@@ -529,7 +535,7 @@ public class InformationDB {
             stm = con.prepareStatement("DROP TABLE " + TABLENAME4);
             stm.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         } finally {
             try { stm.close(); } catch (Exception e) { /* ignored */ }
         }

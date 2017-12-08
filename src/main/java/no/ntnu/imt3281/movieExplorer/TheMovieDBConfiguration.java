@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 /**
  * This class setsup all configuration for images
@@ -20,6 +23,7 @@ class TheMovieDBConfiguration {
     private PreferencesHandler preferences = PreferencesHandler.getPreferenceInstance();
     private String delimiter = "/";
     private String extention = "jpg";
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
     /**
      * Constructor takes a JSON string and creates a JSON to
@@ -181,7 +185,7 @@ class TheMovieDBConfiguration {
         try {
             ImageIO.write(imageFromURL, extention, file);  // ignore returned boolean
         } catch(IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         }
     }
 

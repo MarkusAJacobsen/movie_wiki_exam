@@ -5,9 +5,14 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 class Search {
     private static final String apiKey = "a47f70eb03a70790f5dd711f4caea42d";
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
     private Search() {
         //NO-OP
@@ -25,13 +30,13 @@ class Search {
         try {
             searchString = URLEncoder.encode(query, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         }
         try {
             req = Unirest.get("https://api.themoviedb.org/3/search/multi?include_adult=false&page=1&query="+searchString+"&language=en-US&api_key="+apiKey).asString().getBody();
             return new JSON(req);
         } catch (UnirestException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         }
         return null;
     }
@@ -53,7 +58,7 @@ class Search {
                 db.saveMovieCreditInDB(id, req);
                 return o;
             } catch (UnirestException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             }
         } else {
             String tmp = db.fetchMovieActorCredit(Integer.toString(i));
@@ -79,7 +84,7 @@ class Search {
                 db.saveTakesPartInInDB(Integer.toString(i), req);
                 return o;
             } catch (UnirestException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             }
         } else {
             String tmp = db.fetchTakesPartIn(Integer.toString(i));
@@ -105,7 +110,7 @@ class Search {
                 db.saveMovieInDB(id, req);
                 return o;
             } catch (UnirestException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             }
         } else {
             String tmp = db.fetchMovie(Long.toString(i));

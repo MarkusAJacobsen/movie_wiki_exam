@@ -5,6 +5,10 @@ import org.json.simple.parser.*;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 /**
  * JSON object has a list capable of holding objects of type JSON
@@ -16,6 +20,7 @@ public class JSON {
     private ArrayList<JSON> obj;
     private String key;
     private Object value;
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
     public JSON(String jsonInput) {
         this.obj = new ArrayList<>();
@@ -26,7 +31,7 @@ public class JSON {
             this.addInstance(keys, objects);
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         }
     }
 

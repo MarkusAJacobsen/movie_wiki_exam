@@ -18,9 +18,12 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 
 public class GUI{
@@ -32,6 +35,7 @@ public class GUI{
     // Root node for search result tree view
     private TreeItem<SearchResultItem> searchResultRootNode = new TreeItem<SearchResultItem> (new SearchResultItem(""));
     private PreferencesHandler preferences = PreferencesHandler.getPreferenceInstance();
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
     
     @FXML
     /**
@@ -63,7 +67,7 @@ public class GUI{
 					try {
 						createDetailedPane(selectedNode.getValue().id);
 					} catch (IOException e) {
-						e.printStackTrace();
+						LOGGER.log(Level.SEVERE, e.toString());
 					}
 					searchActors(selectedNode.getValue().id, selectedNode);
 					break;
@@ -149,7 +153,7 @@ public class GUI{
 			try {
 				deleteFileOrFolder(path);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, e.toString());
 			}
 		}
 		openAboutDialog(new ActionEvent());
@@ -313,8 +317,7 @@ public class GUI{
 
 				@Override
 				public FileVisitResult visitFileFailed(Path file, IOException exc) {
-
-					System.out.println("skipped: " + file + " (" + exc + ")");
+					LOGGER.log(Level.INFO, "skipped: " + file + " (" + exc + ")");
 					// Skip folders that can't be traversed
 					return CONTINUE;
 				}
@@ -323,7 +326,7 @@ public class GUI{
 				public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
 
 					if (exc != null)
-						System.out.println("had trouble traversing: " + dir + " (" + exc + ")");
+						LOGGER.log(Level.WARNING, "had trouble traversing: " + dir + " (" + exc + ")");
 					// Ignore errors traversing a folder
 					return CONTINUE;
 				}
@@ -354,7 +357,7 @@ public class GUI{
 			}
 
 			private FileVisitResult handleException(final IOException e) {
-				e.printStackTrace(); // replace with more robust error handling
+				LOGGER.log(Level.SEVERE, e.toString()); // replace with more robust error handling
 				return TERMINATE;
 			}
 

@@ -4,12 +4,17 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 /**
  * This class checks if a genre is registered in the DB
  * If not, go to themoviedb and fetch an updated list
  */
 class Genres {
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
     /**
      * Checks if a genre is in DB if not fetch from themovieDB
@@ -47,7 +52,7 @@ class Genres {
                     return "-1";
                 }
             } catch (UnirestException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.toString());
             }
 
         } else

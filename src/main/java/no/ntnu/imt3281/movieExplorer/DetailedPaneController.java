@@ -14,6 +14,10 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 
 /**
  * The detailedPaneController will keep all variables related
@@ -31,6 +35,7 @@ public class DetailedPaneController {
 
     private JSON movieDetails;
     private TheMovieDBConfiguration config;
+    private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
     /**
      * Constructor for detailedPane
@@ -44,7 +49,7 @@ public class DetailedPaneController {
             req = Unirest.get("https://api.themoviedb.org/3/configuration?api_key=a47f70eb03a70790f5dd711f4caea42d").asString().getBody();
             config = new TheMovieDBConfiguration(req);
         } catch (UnirestException e) {
-            e.printStackTrace();
+           LOGGER.log(Level.SEVERE, e.toString());
         }
     }
 
@@ -68,7 +73,7 @@ public class DetailedPaneController {
             Image toFx = SwingFXUtils.toFXImage(imageFromURL, null);
             this.image.setImage(toFx);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.toString());
         }
 
         JSON genresList = movieDetails.get(6);
