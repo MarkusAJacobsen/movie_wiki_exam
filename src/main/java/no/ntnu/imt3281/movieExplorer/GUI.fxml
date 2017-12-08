@@ -30,7 +30,7 @@
           </Menu>
           <Menu fx:id="hjelp" mnemonicParsing="false" text="Hjelp">
             <items>
-              <MenuItem mnemonicParsing="false" text="Om MovieExploer" />
+              <MenuItem fx:id="about" mnemonicParsing="false" onAction="#openAboutDialog" text="Om MovieExploer" />
             </items>
           </Menu>
         </menus>

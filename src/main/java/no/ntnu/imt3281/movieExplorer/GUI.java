@@ -5,21 +5,26 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.atomic.AtomicLong;
 
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.TERMINATE;
 import static java.nio.file.Files.exists;
 
 
@@ -63,6 +68,8 @@ public class GUI{
 			default: break;
 		}
 	}
+
+
 	private void loadDetailedPane() throws IOException {
 		Pane newPane =  FXMLLoader.load(getClass().getResource("detailedView.fxml"));
 		detailPane.getChildren().add(newPane);
@@ -108,6 +115,94 @@ public class GUI{
 			}
 		}
 	}
+
+	@FXML
+	void deleteDB(MouseEvent event) {
+		openAboutDialog(new ActionEvent());
+
+	}
+
+	@FXML
+	void deleteCache(MouseEvent event) {
+		String [] folders = {"w1280", "w500", "w780", "h623", "w300"};
+		for(String folder : folders) {
+			Path path = Paths.get(preferences.getBasedirectory()+"/"+folder);
+			try {
+				deleteFileOrFolder(path);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		openAboutDialog(new ActionEvent());
+	}
+
+	@FXML
+	void openAboutDialog(ActionEvent event) {
+    	Dialog<String> dialog = new Dialog<>();
+    	dialog.setTitle("Om MovieExplorer");
+		dialog.setHeaderText("Om MovieExplorer");
+
+		Label label1 = new Label("Diskforbruk: ");
+		Label label2 = new Label("Databasen");
+		Label label3 = new Label("Porsterbilder");
+		Label label4 = new Label("Profilbilder");
+		Label label5 = new Label("Backdropbilder");
+		Label label6 = new Label("Logobilder");
+		Label label7 = new Label("Stillbilder");
+
+		Path path = Paths.get(preferences.getBasedirectory()+"/w780");
+		long PosterBilder = calculateFolderSize(path);
+		path = Paths.get(preferences.getBasedirectory()+"/w1280");
+		long BackDrop = calculateFolderSize(path);
+		path = Paths.get(preferences.getBasedirectory()+"/w500");
+		long Logo = calculateFolderSize(path);
+		path = Paths.get(preferences.getBasedirectory()+"/w300");
+		long stills = calculateFolderSize(path);
+		path = Paths.get(preferences.getBasedirectory()+"/h623");
+		long profile = calculateFolderSize(path);
+
+		Label label8 = new Label();
+		Label label9 = new Label(PosterBilder/1000 + " KB");
+		Label label10 = new Label(profile/1000 + " KB");
+		Label label11 = new Label(BackDrop/1000 + " KB");
+		Label label12 = new Label(Logo/1000 + " KB");
+		Label label13 = new Label(stills/1000 + " KB");
+
+		Button emptyDB = new Button();
+		emptyDB.setText("Tøm database");
+		emptyDB.setOnMouseClicked(this::deleteDB);
+
+		Button emptyCache = new Button();
+		emptyCache.setText("Tøm cache");
+		emptyCache.setOnMouseClicked(this::deleteCache);
+
+		GridPane grid = new GridPane();
+		grid.add(label1, 1, 1);
+		grid.add(label2, 1, 2);
+		grid.add(label3, 1, 3);
+		grid.add(label4, 1, 4);
+		grid.add(label5, 1, 5);
+		grid.add(label6, 1, 6);
+		grid.add(label7, 1, 7);
+		grid.add(label8, 2, 2);
+		grid.add(label9, 2, 3);
+		grid.add(label10, 2, 4);
+		grid.add(label11, 2, 5);
+		grid.add(label12, 2, 6);
+		grid.add(label13, 2, 7);
+		grid.add(emptyDB, 1, 8);
+		grid.add(emptyCache, 2, 8);
+		dialog.getDialogPane().setContent(grid);
+
+
+		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+
+		dialog.getDialogPane().setContent(grid);
+    	dialog.showAndWait();
+	}
+
 
 	@FXML
     /**
@@ -159,6 +254,81 @@ public class GUI{
 	}
 
 
+	/**
+	 * Used to calculate the size of a folder in bytes
+	 * https://stackoverflow.com/a/19877372/7036624
+	 * @param path Path to folder
+	 * @return size in bytes
+	 */
+	private long calculateFolderSize(Path path){
+		final AtomicLong size = new AtomicLong(0);
+
+		try {
+			Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+
+					size.addAndGet(attrs.size());
+					return CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFileFailed(Path file, IOException exc) {
+
+					System.out.println("skipped: " + file + " (" + exc + ")");
+					// Skip folders that can't be traversed
+					return CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+
+					if (exc != null)
+						System.out.println("had trouble traversing: " + dir + " (" + exc + ")");
+					// Ignore errors traversing a folder
+					return CONTINUE;
+				}
+			});
+		} catch (IOException e) {
+			throw new AssertionError("walkFileTree will not throw IOException if the FileVisitor does not");
+		}
+
+		return size.get();
+	}
+
+	/**
+	 * Used to delete the image folders "official way since Java 7"
+	 * https://stackoverflow.com/a/3775893/7036624
+	 * @param path Path to folder or file to be deleted
+	 * @throws IOException IO error
+	 */
+	public static void deleteFileOrFolder(final Path path) throws IOException {
+		Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
+			@Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
+					throws IOException {
+				Files.delete(file);
+				return CONTINUE;
+			}
+
+			@Override public FileVisitResult visitFileFailed(final Path file, final IOException e) {
+				return handleException(e);
+			}
+
+			private FileVisitResult handleException(final IOException e) {
+				e.printStackTrace(); // replace with more robust error handling
+				return TERMINATE;
+			}
+
+			@Override public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
+					throws IOException {
+				if(e!=null)return handleException(e);
+				Files.delete(dir);
+				return CONTINUE;
+			}
+		});
+	};
+
+
 	class SearchResultItem {
     		private String media_type = "";
     		private String name = "";
@@ -206,6 +376,7 @@ public class GUI{
 			this.media_type = media_type;
 			this.id = id;
 		}
+
 
 
 		/**
