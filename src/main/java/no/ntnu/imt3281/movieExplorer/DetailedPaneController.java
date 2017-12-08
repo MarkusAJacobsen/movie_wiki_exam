@@ -31,6 +31,10 @@ public class DetailedPaneController {
     private JSON movieDetails;
     private TheMovieDBConfiguration config;
 
+    /**
+     * Constructor for detailedPane
+     * @param id Movie ID to fill in the Pane with
+     */
     DetailedPaneController(long id) {
         movieDetails = Search.movie(id);
 
@@ -46,7 +50,7 @@ public class DetailedPaneController {
     @FXML
     /**
      * Called when the object has been created and connected to the fxml file. All components defined in the fxml file is
-     * ready and available.
+     * ready and available. Set all fields related to the detailedPane from movieDetails
      */
    public void initialize() {
        title.setText(movieDetails.get(3).getValue("title").toString());

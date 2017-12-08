@@ -8,18 +8,20 @@ import java.sql.*;
  *
  * The code is mostly refactored from the lectures and project 2 in this subject
  */
-public class GenresDB {
+public class InformationDB {
     private Connection con;
     private final String url = "jdbc:derby:genres.db";
     private boolean connectedToDB = false;
-    private static GenresDB instance = null;
+    private static InformationDB instance = null;
     private static final String TABLENAME = "Genres";
+    private static final String TABLENAME2 = "Actors";
+    private static final String TABLENAME3 = "Movies";
 
     /**
      * Constructor, setsup connection and creates the table
      * @throws SQLException
      */
-    private GenresDB() throws SQLException
+    private InformationDB() throws SQLException
     {
         try
         {
@@ -40,10 +42,10 @@ public class GenresDB {
      * before, only return the "living" instance
      * @return Instance of this DB
      */
-    public static GenresDB getInstance() {
+    public static InformationDB getInstance() {
         if(instance == null) {
             try {
-                instance = new GenresDB();
+                instance = new InformationDB();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -74,6 +76,7 @@ public class GenresDB {
                        + "number VARCHAR(255) NOT NULL, "
                        + " name varchar(255), "
                        + " PRIMARY KEY ( id ))");
+                
                 stm.close();
             }
             catch (SQLException e2)

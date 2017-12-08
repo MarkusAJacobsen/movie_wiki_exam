@@ -17,7 +17,7 @@ public class Genres {
      * @return corresponding name of genre to the i
      */
     public static String resolve(int i) {
-        GenresDB DB = GenresDB.getInstance();
+        InformationDB DB = InformationDB.getInstance();
 
         if(!DB.GenreInDb(Integer.toString(i))) {
             String reqMovie, reqTv;
@@ -36,12 +36,12 @@ public class Genres {
                 }
 
                 for(int j = 0; j < genresTV.size(); j++) {
-                    GenresDB DB2 = GenresDB.getInstance();
+                    InformationDB DB2 = InformationDB.getInstance();
                     JSON o = genresTV.get(j);
                     DB2.addGenres(o.getValue("id").toString(), o.getValue("name").toString());
                 }
 
-                GenresDB DB3 = GenresDB.getInstance();
+                InformationDB DB3 = InformationDB.getInstance();
                 String result = DB3.fetchField(i);
                 if(!Objects.equals(result, "")){
                     return "-1";
