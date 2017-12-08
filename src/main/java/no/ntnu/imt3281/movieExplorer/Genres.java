@@ -16,6 +16,10 @@ import static java.util.logging.Logger.GLOBAL_LOGGER_NAME;
 class Genres {
     private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
 
+    private Genres() {
+        //NO-OP
+    }
+
     /**
      * Checks if a genre is in DB if not fetch from themovieDB
      * @param i External ID to fetch

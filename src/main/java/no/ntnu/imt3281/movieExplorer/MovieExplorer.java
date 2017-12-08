@@ -25,6 +25,9 @@ public class MovieExplorer extends Application {
 	       primaryStage.setScene(myScene);
 	       primaryStage.show();
 
+	       //Fetch Genre list at startup with an non existing ID
+	       Genres.resolve(-1);
+
 	       PreferencesHandler preferences = PreferencesHandler.getPreferenceInstance();
 	       if(Objects.equals(preferences.getBasedirectory(), "BASE_DIR")) {
 	       		preferences.setBasedirectory(System.getProperty("user.dir"));

@@ -22,6 +22,12 @@ public class InformationDB {
     private static final String TABLENAME3 = "TakesPartIn";
     private static final String TABLENAME4 = "Movies";
     private static final Logger LOGGER = Logger.getLogger(GLOBAL_LOGGER_NAME);
+    private static final String INSERT = "INSERT INTO ";
+    private static final String CREATE = "CREATE TABLE ";
+    private static final String INCREMENTER = "(id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), ";
+    private static final String DROP = "DROP TABLE ";
+    private static final String PRIMARYKEY = "PRIMARY KEY";
+    private static final String NOTCONNTACTERROR = "Not contact with DB";
 
     /**
      * Constructor, setsup connection and creates the table
@@ -79,19 +85,27 @@ public class InformationDB {
             try                                     // Create the table
             {
                 stm = con.createStatement();
-                stm.execute("CREATE TABLE  " + TABLENAME +"(id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                stm.execute(CREATE + TABLENAME + INCREMENTER
                        + "number VARCHAR(255) NOT NULL, "
                        + " name varchar(255), "
-                       + " PRIMARY KEY ( id ))");
+                       + PRIMARYKEY +"( id ))");
 
                 stm.close();
             } catch (SQLException e2) {
                 LOGGER.log(Level.SEVERE, e2.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
         } finally {
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
     }
 
@@ -108,18 +122,26 @@ public class InformationDB {
             {
                 stm = con.createStatement();
 
-                stm.execute("CREATE TABLE " + TABLENAME2 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                stm.execute(CREATE + TABLENAME2 + INCREMENTER
                         + "number VARCHAR(55), "
                         + "actorString CLOB, "
-                        + "PRIMARY KEY (id))");
+                        + PRIMARYKEY +"(id))");
                 stm.close();
             } catch (SQLException e2) {
                 LOGGER.log(Level.SEVERE, e2.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
         } finally {
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
     }
 
@@ -136,18 +158,26 @@ public class InformationDB {
             {
                 stm = con.createStatement();
 
-                stm.execute("CREATE TABLE " + TABLENAME3 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                stm.execute(CREATE + TABLENAME3 + INCREMENTER
                         + "number VARCHAR(55), "
                         + "takesPartInString CLOB, "
-                        + "PRIMARY KEY (id))");
+                        + PRIMARYKEY +"(id))");
                 stm.close();
             } catch (SQLException e2) {
                 LOGGER.log(Level.SEVERE, e2.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
         } finally {
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
     }
 
@@ -164,19 +194,27 @@ public class InformationDB {
             {
                 stm = con.createStatement();
 
-                stm.execute("CREATE TABLE " + TABLENAME4 + "(id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+                stm.execute(CREATE + TABLENAME4 + INCREMENTER
                         + "number VARCHAR(55), "
                         + "movieString CLOB, "
-                        + "PRIMARY KEY (id))");
+                        + PRIMARYKEY +"(id))");
                 stm.close();
             } catch (SQLException e2) {
                 LOGGER.log(Level.SEVERE, e2.toString());
 
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
         } finally {
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
     }
 
@@ -188,7 +226,7 @@ public class InformationDB {
      */
     int addGenres(String id, String name) {
         if (!connectedToDB)                          // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
+            throw new IllegalStateException(NOTCONNTACTERROR);
         // check if username is used
         if (inDb(id, TABLENAME))                      // If exist !!
         {
@@ -198,7 +236,7 @@ public class InformationDB {
         {
             PreparedStatement stm = null;
             try {
-                stm = con.prepareStatement("INSERT INTO "+ TABLENAME+" (Number, Name) VALUES (?, ?)");
+                stm = con.prepareStatement(INSERT + TABLENAME+" (Number, Name) VALUES (?, ?)");
 
                 stm.setString(1, id); // Make the statement ready
                 stm.setString(2, name);
@@ -212,7 +250,11 @@ public class InformationDB {
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, e.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
         }
         return 0;
@@ -250,8 +292,16 @@ public class InformationDB {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { res.close(); } catch (Exception e) { /* ignored */ }
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
         return false;
     }
@@ -261,7 +311,7 @@ public class InformationDB {
 
     int saveMovieCreditInDB(String number, String jsonString) {
         if (!connectedToDB)                          // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
+            throw new IllegalStateException(NOTCONNTACTERROR);
         // check if username is used
         if (inDb(number, TABLENAME2))                      // If exist !!
             return -1;
@@ -269,7 +319,7 @@ public class InformationDB {
         {
             PreparedStatement stm = null;
             try {
-                stm = con.prepareStatement("INSERT INTO " + TABLENAME2 + " (Number, ActorString) VALUES (?, ?)");
+                stm = con.prepareStatement(INSERT + TABLENAME2 + " (Number, ActorString) VALUES (?, ?)");
 
                 stm.setString(1, number);
                 stm.setString(2, jsonString); // Make the statement ready
@@ -284,7 +334,11 @@ public class InformationDB {
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, e.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
             return 0;
         }
@@ -292,7 +346,7 @@ public class InformationDB {
 
     int saveTakesPartInInDB(String number, String jsonString) {
         if (!connectedToDB)                          // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
+            throw new IllegalStateException(NOTCONNTACTERROR);
         // check if username is used
         if (inDb(number, TABLENAME3))                      // If exist !!
             return -1;
@@ -300,7 +354,7 @@ public class InformationDB {
         {
             PreparedStatement stm = null;
             try {
-                stm = con.prepareStatement("INSERT INTO " + TABLENAME3 + " (Number, TakesPartInString) VALUES (?, ?)");
+                stm = con.prepareStatement(INSERT + TABLENAME3 + " (Number, TakesPartInString) VALUES (?, ?)");
 
                 stm.setString(1, number);
                 stm.setString(2, jsonString); // Make the statement ready
@@ -315,7 +369,11 @@ public class InformationDB {
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, e.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
             return 0;
         }
@@ -323,7 +381,7 @@ public class InformationDB {
 
     public int saveMovieInDB(String number, String jsonString) {
         if (!connectedToDB)                     // Is there connection with DB?
-            throw new IllegalStateException("Not contact with DB");
+            throw new IllegalStateException(NOTCONNTACTERROR);
         // check if username is used
         if (inDb(number, TABLENAME4))                      // If exist !!
             return -1;
@@ -331,7 +389,7 @@ public class InformationDB {
         {
             PreparedStatement stm = null;
             try {
-                stm = con.prepareStatement("INSERT INTO " + TABLENAME4 + " (Number, MovieString) VALUES (?, ?)");
+                stm = con.prepareStatement(INSERT + TABLENAME4 + " (Number, MovieString) VALUES (?, ?)");
 
                 stm.setString(1, number);
                 stm.setString(2, jsonString); // Make the statement ready
@@ -346,7 +404,11 @@ public class InformationDB {
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, e.toString());
             } finally {
-                try { stm.close(); } catch (Exception e) { /* ignored */ }
+                try {
+                    if (stm != null) {
+                        stm.close();
+                    }
+                } catch (Exception e) { /* ignored */ }
             }
             return 0;
         }
@@ -384,8 +446,16 @@ public class InformationDB {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { res.close(); } catch (Exception e) { /* ignored */ }
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
@@ -422,8 +492,16 @@ public class InformationDB {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { res.close(); } catch (Exception e) { /* ignored */ }
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
@@ -460,8 +538,16 @@ public class InformationDB {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { res.close(); } catch (Exception e) { /* ignored */ }
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
@@ -498,8 +584,16 @@ public class InformationDB {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { res.close(); } catch (Exception e) { /* ignored */ }
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
         return "";
     }
@@ -511,13 +605,17 @@ public class InformationDB {
     void dropTables(String table) {
         PreparedStatement stm = null;
         try {
-            stm = con.prepareStatement("DROP TABLE " + table);
+            stm = con.prepareStatement(DROP + table);
             stm.executeUpdate();
             stm.close();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
     }
 
@@ -527,18 +625,22 @@ public class InformationDB {
     void dropAllTables() {
         PreparedStatement stm = null;
         try {
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME);
+            stm = con.prepareStatement(DROP + TABLENAME);
             stm.executeUpdate();
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME2);
+            stm = con.prepareStatement(DROP + TABLENAME2);
             stm.executeUpdate();
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME3);
+            stm = con.prepareStatement(DROP + TABLENAME3);
             stm.executeUpdate();
-            stm = con.prepareStatement("DROP TABLE " + TABLENAME4);
+            stm = con.prepareStatement(DROP + TABLENAME4);
             stm.close();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, e.toString());
         } finally {
-            try { stm.close(); } catch (Exception e) { /* ignored */ }
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (Exception e) { /* ignored */ }
         }
     }
 
